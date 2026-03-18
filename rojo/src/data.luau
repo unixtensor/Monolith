@@ -83,7 +83,6 @@ function Data:collect()
 		[1] = {} :: QueryHeader; --header
 		[2] = {} :: QueryBody; --body
 	}
-
 	for _, service in Data.monitor do
 		self.payload[2][service.Name] = query(service)
 	end
