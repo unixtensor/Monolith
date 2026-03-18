@@ -1,6 +1,26 @@
 --!strict
 
-local Data = {}
+type QueryBody = {
+	ClassName: string;
+	Name: string;
+	Children: QueryBody?;
+}
+type QueryHeader = {
+	Game: string;
+	Owner: number;
+}
+type Body = {
+	[number]: QueryHeader | QueryBody
+}
+type Constructor = {
+	__index: Constructor;
+	monitor: {Instance};
+	new: () -> Data;
+	collect: (self: Data) -> string;
+}
+export type Data = typeof(setmetatable({} :: { body: Body }, {} :: Constructor))
+
+local Data = {} :: Constructor
 Data.__index = Data
 
 --Services to monitor
@@ -22,50 +42,49 @@ Data.monitor = {
 
 local HttpService = game:GetService("HttpService")
 
-local function payload(self)
-	self.collected[1] = {
+local function payload(self: Data): string
+	self.body[1] = {
 		Game = game.Name,
 		Owner = game.CreatorId
 	}
-	return HttpService:JSONEncode(self.collected)
+	return HttpService:JSONEncode(self.body)
 end
 
-local function body(instance: Instance, parent: Instance?)
+local function body(instance: Instance, children: QueryBody?): QueryBody
 	local skeleton = {
 		ClassName = instance.ClassName,
 		Name = instance.Name
 	}
-	if parent then
-		skeleton.Children = parent
+	if children then
+		skeleton.Children = children
 	end
 	return skeleton
 end
 
-local function query(instance: Instance)
+local function query(instance: Instance): QueryBody
  	local inst_c = instance:GetChildren()
     local inst_c_collection = nil
 
     if #inst_c ~= 0 then
-        inst_c_collection = {}
         for _, child in inst_c do
-            table.insert(inst_c_collection, query(child))
+            inst_c_collection = query(child)
         end
     end
     return body(instance, inst_c_collection)
 end
 
 function Data.new()
-	return setmetatable({ collected = {} }, Data)
+	return setmetatable({ body = {} }, Data)
 end
 
 function Data:collect()
-	self.collected = {
-		{}; --header
-		{}; --body
+	self.body = {
+		[1] = {} :: QueryHeader; --header
+		[2] = {} :: QueryBody; --body
 	}
 
 	for _, service in Data.monitor do
-		self.collected[2][service.Name] = query(service, body(service))
+		self.body[2][service.Name] = query(service)
 	end
 	return payload(self)
 end
