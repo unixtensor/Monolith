@@ -1,5 +1,7 @@
 --!strict
 
+local HttpService = game:GetService("HttpService")
+
 type QueryBody = {
 	ClassName: string;
 	Name: string;
@@ -40,8 +42,6 @@ Data.monitor = {
 	game:GetService("TextChatService");
 }
 
-local HttpService = game:GetService("HttpService")
-
 local function payload(self: Data): string
 	self.body[1] = {
 		Game = game.Name,
@@ -51,7 +51,7 @@ local function payload(self: Data): string
 end
 
 local function body(instance: Instance, children: QueryBody?): QueryBody
-	local skeleton = {
+	local skeleton: QueryBody = {
 		ClassName = instance.ClassName,
 		Name = instance.Name
 	}
