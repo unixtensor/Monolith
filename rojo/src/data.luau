@@ -1,3 +1,5 @@
+--!strict
+
 local Data = {}
 Data.__index = Data
 
@@ -28,7 +30,7 @@ local function payload(self)
 	return HttpService:JSONEncode(self.collected)
 end
 
-function body(instance: Instance, parent: Instance?)
+local function body(instance: Instance, parent: Instance?)
 	local skeleton = {
 		ClassName = instance.ClassName,
 		Name = instance.Name
