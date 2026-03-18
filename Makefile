@@ -1,3 +1,5 @@
+.PHONY: rojo
+
 setup:
 	cd web && pnpm install
 	go mod download
@@ -10,6 +12,9 @@ web:
 	rm -rf ./web/dist
 	cd web && pnpm install
 	cd web && pnpm run build
+
+rojo:
+	rojo sourcemap > sourcemap.json
 
 server:
 	CGO_ENABLED=0 GOOS=linux go build -o monolith_server ./cmd/monolith
