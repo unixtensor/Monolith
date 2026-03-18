@@ -7,7 +7,7 @@ RUN go mod download
 
 COPY cmd/ ./cmd/
 COPY pkg/ ./pkg/
-RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/monolith
 
 FROM alpine:latest
 
