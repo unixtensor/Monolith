@@ -11,7 +11,7 @@ type QueryHeader = {
 	Game: string;
 	Owner: number;
 }
-type Body = {
+type Payload = {
 	[number]: QueryHeader | QueryBody
 }
 type Constructor = {
@@ -20,7 +20,7 @@ type Constructor = {
 	new: () -> Data;
 	collect: (self: Data) -> string;
 }
-export type Data = typeof(setmetatable({} :: { body: Body }, {} :: Constructor))
+export type Data = typeof(setmetatable({} :: { payload: Payload }, {} :: Constructor))
 
 local Data = {} :: Constructor
 Data.__index = Data
@@ -42,12 +42,12 @@ Data.monitor = {
 	game:GetService("TextChatService");
 }
 
-local function payload(self: Data): string
-	self.body[1] = {
+local function json_payload(self: Data): string
+	self.payload[1] = {
 		Game = game.Name,
 		Owner = game.CreatorId
 	}
-	return HttpService:JSONEncode(self.body)
+	return HttpService:JSONEncode(self.payload)
 end
 
 local function body(instance: Instance, children: QueryBody?): QueryBody
@@ -78,15 +78,15 @@ function Data.new()
 end
 
 function Data:collect()
-	self.body = {
+	self.payload = {
 		[1] = {} :: QueryHeader; --header
 		[2] = {} :: QueryBody; --body
 	}
 
 	for _, service in Data.monitor do
-		self.body[2][service.Name] = query(service)
+		self.payload[2][service.Name] = query(service)
 	end
-	return payload(self)
+	return json_payload(self)
 end
 
 return Data
