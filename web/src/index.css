@@ -20,7 +20,7 @@ button:not(:disabled),
 
 	--background: oklch(1 0 0);
 	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
+	--card: oklch(13% 0 0);
 	--card-foreground: oklch(0.145 0 0);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.145 0 0);
@@ -128,6 +128,14 @@ button:not(:disabled),
 	--radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@layer utilities {
+	.animate-spin-pulse {
+		animation:
+			spin 1s linear infinite,
+			pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	}
+}
+
 @layer base {
 	* {
 		@apply border-border outline-ring/50;
@@ -138,4 +146,8 @@ button:not(:disabled),
 	html {
 		@apply font-sans;
 	}
+}
+
+* {
+	color: #cccccc;
 }

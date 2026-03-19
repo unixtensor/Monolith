@@ -1,10 +1,15 @@
 import { Route, Routes } from "react-router";
-import Index from "./app/init";
+import GetConnected from "./app/init";
+import Login from "./app/Login/Login";
 
 function App() {
 	return (
 		<Routes>
-			<Route index element={<Index />} />
+			<Route path="/login" element={<Login />} />
+			<Route element={<GetConnected />}>
+				<Route index element={<Login />} />
+				<Route path="/games/:id" />
+			</Route>
 		</Routes>
 	);
 }
