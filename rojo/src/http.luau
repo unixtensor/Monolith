@@ -24,7 +24,7 @@ type Constructor = {
 	__index: Constructor;
 	Enabled: boolean;
 	ApiEndpoint: Api;
-	new: (address: string, compression: Enum.HttpCompression) -> Http;
+	new: (address: string, enable_compression: boolean?) -> Http;
 	ValidAddress: (address: string) -> boolean;
 	PostAsync: (self: Http, payload: JsonPayload, request_endpoint: string) -> ();
 	UploadAsync: (self: Http, payload: Data.Payload) -> ();
@@ -35,30 +35,33 @@ type Self = {
 }
 export type Http = setmetatable<Self, typeof(Http)>
 
-local function MakeApiRequest(address: string, request: string): string
+local function FormatApiRequest(address: string, request: string): string
 	return `{address}/api/v1/{request}`
 end
 
 local function PostBody(self: Http, is_game_data: boolean, json_payload: string, request: string): any
-	return {
-		Url = MakeApiRequest(self.address, request),
+	local payload = {
+		Url = FormatApiRequest(self.address, request),
 		Method = "POST",
 		Headers = {
 			["Content-Type"] = "application/json",
 		},
 		Body = json_payload,
-		Compress = is_game_data and self.compression or Enum.HttpCompression.None
 	}
+	if is_game_data then
+		payload.Compress = self.compression
+	end
+	return payload
 end
 
 function Http.ValidAddress(address)
 	return address:match("^https?://") ~= nil
 end
 
-function Http.new(address, compression)
+function Http.new(address, enable_compression)
 	local self = {}
 	self.address = address
-	self.compression = compression
+	self.compression = enable_compression and Enum.HttpCompression.Gzip or Enum.HttpCompression.None
 	return setmetatable(self, Http)
 end
 

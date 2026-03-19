@@ -15,7 +15,7 @@ type Constructor = {
 	__index: Constructor;
 	DEV_MODE: boolean;
 	LISTEN_RATE: number;
-	new: (address: string, compression: Enum.HttpCompression?) -> Monolith;
+	new: (address: string, enable_compression: boolean?) -> Monolith;
 	ConnectAsync: (self: Monolith) -> ();
 	UploadAsync: (self: Monolith) -> ();
 	ListenAsync: (self: Monolith) -> ();
@@ -27,7 +27,7 @@ type Self = {
 }
 export type Monolith = setmetatable<Self, typeof(Monolith)>
 
-function Monolith.new(address, compression)
+function Monolith.new(address, enable_compression)
 	if not Monolith.DEV_MODE and not Http.Enabled then
 		error("Cannot proceed! Monolith REQUIRES http requests to be enabled for this game. STOPPING", 0)
 	end
@@ -37,7 +37,7 @@ function Monolith.new(address, compression)
 
 	local self = {}
 	self.data = Data.new()
-	self.http = Http.new(address, compression or Enum.HttpCompression.Gzip)
+	self.http = Http.new(address, enable_compression)
 	self.address = address
 	return setmetatable(self, Monolith)
 end
