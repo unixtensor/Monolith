@@ -12,10 +12,10 @@ const PROMPT_PADDING = "\n-*-*-*-*-*-*-*-*-*-*-"
 func main() {
 	port, port_set := os.LookupEnv("PORT")
 	_, debugging_set := os.LookupEnv("DEBUG")
-	secret, secret_set := os.LookupEnv("SECRET")
+	token, token_set := os.LookupEnv("TOKEN")
 
-	if !secret_set {
-		log.Fatal("Environment variable: SECRET is not set, STOPPING." + PROMPT_PADDING)
+	if !token_set {
+		log.Fatal("Environment variable: TOKEN is not set, STOPPING." + PROMPT_PADDING)
 	}
 	if !port_set {
 		port = "3000"
@@ -24,7 +24,7 @@ func main() {
 
 	api.Start(&api.Config{
 		Port:      port,
-		Secret:    secret,
+		Token:     token,
 		Debugging: debugging_set,
 	})
 }

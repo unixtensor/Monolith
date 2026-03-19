@@ -54,7 +54,7 @@ export default function Login() {
 			<div className="flex flex-col gap-6 w-100 text-center">
 				<Card>
 					<CardHeader className="my-1">
-						<CardTitle>Enter key to gain access</CardTitle>
+						<CardTitle>Enter token to gain access</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<form>

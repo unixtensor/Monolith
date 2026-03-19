@@ -13,7 +13,7 @@ import (
 
 type Config struct {
 	Port      string
-	Secret    string
+	Token     string
 	Debugging bool
 }
 
