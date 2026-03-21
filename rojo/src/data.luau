@@ -3,7 +3,7 @@
 type QueryBody = {
 	ClassName: string;
 	Name: string;
-	Children: QueryBody?;
+	children: QueryBody?;
 }
 export type Payload = {
 	[string]: QueryBody
@@ -43,7 +43,7 @@ local function body(instance: Instance, children: QueryBody?): QueryBody
 		Name = instance.Name
 	}
 	if children then
-		skeleton.Children = children
+		skeleton.children = children
 	end
 	return skeleton
 end
