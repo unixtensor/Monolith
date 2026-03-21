@@ -59,12 +59,18 @@ func connected(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, game.Connected())
 }
 
+func disconnect(ctx *gin.Context) {
+	game.Disconnect()
+	ctx.Status(http.StatusOK)
+}
+
 func v1(api_root *gin.Engine, cfg *Config) {
-	api_v1 := api_root.Group("/api/v1")
-	api_v1.POST("/connect", VerifyToken(&cfg.Token), connect)
+	api_v1 := api_root.Group("/api/v1", VerifyToken(&cfg.Token))
+	api_v1.POST("/disconnect", disconnect)
+	api_v1.POST("/connect", connect)
 	api_v1.GET("/connected", connected)
 
-	connected_api := api_v1.Group("/connected", VerifyToken(&cfg.Token), VerifyGameConnected())
+	connected_api := api_v1.Group("/connected", VerifyGameConnected())
 	connected_api.POST("/upload", upload)
 	connected_api.GET("/instance", get_instance)
 }

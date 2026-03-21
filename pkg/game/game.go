@@ -21,12 +21,12 @@ type GameMetadata struct {
 	Name      string `json:"Name"`
 }
 
-type InstanceData interface {
-	gzip | gin.H
-}
-
 var Current Game
 
 func Connected() bool {
 	return Current.Metadata.Id != 0
+}
+
+func Disconnect() {
+	Current = Game{}
 }
