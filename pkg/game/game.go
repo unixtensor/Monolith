@@ -2,9 +2,17 @@ package game
 
 import "github.com/gin-gonic/gin"
 
+type gzip []byte
+
+type instance struct {
+	Compressed bool
+	InnerGzip  gzip
+	Inner      gin.H
+}
+
 type Game struct {
 	Metadata GameMetadata
-	Instance gin.H
+	Instance instance
 }
 
 type GameMetadata struct {
@@ -13,8 +21,12 @@ type GameMetadata struct {
 	Name      string `json:"Name"`
 }
 
-var CurrentGame Game
+type InstanceData interface {
+	gzip | gin.H
+}
+
+var Current Game
 
 func Connected() bool {
-	return CurrentGame.Metadata.Id != 0
+	return Current.Metadata.Id != 0
 }
