@@ -17,9 +17,6 @@ type Constructor = {
 	LISTEN_RATE: number;
 	UseInsecure: () -> ();
 	new: (address: string, token: string, enable_compression: boolean?) -> Monolith;
-	ConnectAsync: (self: Monolith) -> ();
-	UploadAsync: (self: Monolith) -> ();
-	ListenAsync: (self: Monolith) -> ();
 }
 type Self = {
 	data: Data.Data;
@@ -43,22 +40,6 @@ function Monolith.new(address, token, enable_compression)
 	return setmetatable(self, Monolith)
 end
 
-function Monolith:ConnectAsync()
-	self.http:PostAsync({
-		Id = game.PlaceId,
-		Name = game.Name,
-		CreatorId = game.CreatorId,
-	}, "/connect")
-end
 
-function Monolith:UploadAsync()
-	self.http:UploadAsync(self.data:collect())
-end
-
-function Monolith:ListenAsync()
-	while task.wait(Monolith.LISTEN_RATE) do
-		self:UploadAsync()
-	end
-end
 
 return Monolith

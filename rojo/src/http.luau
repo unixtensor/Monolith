@@ -1,7 +1,6 @@
 --!strict
 
 local HttpService = game:GetService("HttpService")
-local Data = require(script.Parent.data)
 
 local Http = {} :: Constructor
 Http.__index = Http
@@ -10,34 +9,33 @@ Http.Insecure = Http.__bypassInsecure
 Http.Enabled = HttpService.HttpEnabled
 
 type Json = {
-	[string]: any
+	[string]: any;
 }
 type RestDetails = {
 	method: "POST" | "GET";
-	json: string;
 	request: string;
+	json: string?;
 }
-
 type Constructor = {
 	__index: Constructor;
 	__bypassInsecure: boolean;
 	Enabled: boolean;
 	Insecure: boolean;
-	new: (address: string, token: string, enable_compression: boolean?) -> Http;
 	ValidAddress: (address: string) -> string?;
-	PostAsync: (self: Http, payload: Json, request_endpoint: string) -> ();
-	UploadAsync: (self: Http, payload: Data.Payload) -> ();
+	new: (address: string, token: string, enable_compression: boolean?) -> Http;
+	PostAsync: (self: Http, request: string, json_str: string, compress: boolean) -> (boolean, string);
+	GetAsync: (self: Http, request: string, json_str: string) -> (boolean, string);
 }
 type Self = {
 	address: string;
 	token: string;
-	compression: Enum.HttpCompression;
+	compression: boolean?;
 }
 export type Http = setmetatable<Self, typeof(Http)>
 
 local api_root: string = "/api/v1"
 
-local function restful_body(self: Http, is_game_data: boolean, rest: RestDetails): Json
+local function restful_body(self: Http, rest: RestDetails, compress: boolean): Json
 	local payload = {
 		Url = self.address .. api_root .. rest.request;
 		Method = rest.method;
@@ -45,13 +43,25 @@ local function restful_body(self: Http, is_game_data: boolean, rest: RestDetails
 			["Content-Type"] = "application/json";
 			["x-api-key"] = self.token;
 		},
-		Body = rest.json;
+		Body = rest.json or "{}";
 	}
-	if is_game_data then
-		print(self.compression)
+	if compress then
 		payload.Compress = self.compression
 	end
 	return payload
+end
+
+local function request_async(self: Http, rest: RestDetails, compress: boolean): (boolean, string)
+	local r_ok, r = pcall(function()
+		return HttpService:RequestAsync(restful_body(self, rest, compress))
+	end)
+	if not r_ok then
+		return false, tostring(r)
+	end
+	if not r.Success then
+		return false, r.StatusMessage
+	end
+	return true, ""
 end
 
 local function local_address(host: string): string?
@@ -90,10 +100,24 @@ function Http.new(address, token, enable_compression)
 	local self = {}
 	self.address = address
 	self.token = token
-	self.compression = enable_compression and Enum.HttpCompression.Gzip or Enum.HttpCompression.None
+	self.compression = enable_compression
 	return setmetatable(self, Http)
 end
 
+function Http:PostAsync(request, json_str, compress)
+	return request_async(self, {
+		method = "POST";
+		request = request;
+		json = json_str;
+	}, compress)
+end
 
+function Http:GetAsync(request, json_str)
+	return request_async(self, {
+		method = "GET";
+		request = request;
+		json = json_str;
+	}, false)
+end
 
 return Http
