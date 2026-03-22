@@ -1,7 +1,8 @@
 --!strict
 
+local Api = require(script.api)
 local Data = require(script.data)
-local Http = require(script.http)
+local Http = require(script.api.http)
 
 local Monolith = {} :: Constructor
 Monolith.__index = Monolith
@@ -17,10 +18,11 @@ type Constructor = {
 	LISTEN_RATE: number;
 	UseInsecure: () -> ();
 	new: (address: string, token: string, enable_compression: boolean?) -> Monolith;
+	Connect: (self: Monolith) -> boolean;
 }
 type Self = {
 	data: Data.Data;
-	http: Http.Http;
+	api: Api.Api;
 	address: string;
 }
 export type Monolith = setmetatable<Self, typeof(Monolith)>
@@ -35,7 +37,7 @@ function Monolith.new(address, token, enable_compression)
 
 	local self = {}
 	self.data = Data.new()
-	self.http = Http.new(address, token, enable_compression)
+	self.api = Api.new(address, token)
 	self.address = address
 	return setmetatable(self, Monolith)
 end
