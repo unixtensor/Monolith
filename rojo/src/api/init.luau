@@ -1,3 +1,4 @@
+--!strict
 local Http = require(script.http)
 
 local Api = {} :: Constructor
