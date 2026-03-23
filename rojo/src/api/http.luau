@@ -8,23 +8,33 @@ Http.__bypassInsecure = false
 Http.Insecure = Http.__bypassInsecure
 Http.Enabled = HttpService.HttpEnabled
 
-type Json = {
-	[string]: any;
+export type HttpResponseData<T = string?> = {
+    Body: T,
+    Headers: {
+        [string]: string
+    },
+    StatusCode: number,
+    StatusMessage: string,
+    Success: boolean
+}
+export type Json<K = string, V = any> = {
+	[K]: V;
 }
 type RestDetails = {
 	method: "POST" | "GET";
 	request: string;
 	body: string?;
 }
+
 type Constructor = {
 	__index: Constructor;
 	__bypassInsecure: boolean;
 	Enabled: boolean;
 	Insecure: boolean;
 	ValidAddress: (address: string) -> string?;
-	new: (address: string, token: string, enable_compression: boolean?) -> Http;
-	PostAsync: (self: Http, request: string, body: Json, compress: boolean) -> (boolean, string);
-	GetAsync: (self: Http, request: string, body: Json) -> (boolean, string);
+	new: (address: string, token: string, compression: boolean?) -> Http;
+	PostAsync: <T>(self: Http, request: string, body: Json) -> (boolean, HttpResponseData<T>);
+	GetAsync: <T>(self: Http, request: string) -> (boolean, HttpResponseData<T>);
 }
 type Self = {
 	address: string;
@@ -35,7 +45,7 @@ export type Http = setmetatable<Self, typeof(Http)>
 
 local api_root: string = "/api/v1"
 
-local function restful_body(self: Http, rest: RestDetails): Json
+local function rest_builder(self: Http, rest: RestDetails): Json
 	local payload = {
 		Url = self.address .. api_root .. rest.request;
 		Method = rest.method;
@@ -43,7 +53,7 @@ local function restful_body(self: Http, rest: RestDetails): Json
 			["Content-Type"] = "application/json";
 			["x-api-key"] = self.token;
 		},
-		Body = rest.body or "{}";
+		Body = rest.body;
 	}
 	if self.compression then
 		payload.Compress = Enum.HttpCompression.Gzip
@@ -51,17 +61,14 @@ local function restful_body(self: Http, rest: RestDetails): Json
 	return payload
 end
 
-local function request_async(self: Http, rest: RestDetails): (boolean, string)
-	local r_ok, r = pcall(function()
-		return HttpService:RequestAsync(restful_body(self, rest))
-	end)
-	if not r_ok then
-		return false, tostring(r)
+local function response_middleware<T>(r: HttpResponseData): (boolean, HttpResponseData<T>)
+	if r.Body then
+		r.Body = HttpService:JSONDecode(r.Body)
 	end
 	if not r.Success then
-		return false, r.StatusMessage
+		warn("Request failed.", r.StatusCode, r.StatusMessage, r.Body)
 	end
-	return true, ""
+	return r.Success, r
 end
 
 local function local_address(host: string): string?
@@ -89,7 +96,7 @@ function Http.ValidAddress(address)
 	return nil
 end
 
-function Http.new(address, token, enable_compression)
+function Http.new(address, token, compression)
 	if Http.Insecure then
 		if not Http.__bypassInsecure then
 			error("An insecure address is being used. STOPPING", 0)
@@ -100,24 +107,25 @@ function Http.new(address, token, enable_compression)
 	local self = {}
 	self.address = address
 	self.token = token
-	self.compression = enable_compression
+	self.compression = compression
 	return setmetatable(self, Http)
 end
 
-function Http:PostAsync(request, body, compress)
-	return request_async(self, {
+function Http:PostAsync(request, body)
+	local r = HttpService:RequestAsync(rest_builder(self, {
 		method = "POST";
 		request = request;
-		json = HttpService:JSONEncode(body);
-	}, compress)
+		body = HttpService:JSONEncode(body);
+	}))
+	return response_middleware(r)
 end
 
-function Http:GetAsync(request, body)
-	return request_async(self, {
+function Http:GetAsync(request)
+	local r = HttpService:RequestAsync(rest_builder(self, {
 		method = "GET";
 		request = request;
-		json = HttpService:JSONEncode(body);
-	}, false)
+	}))
+	return response_middleware(r)
 end
 
 return Http

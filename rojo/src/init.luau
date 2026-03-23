@@ -18,7 +18,7 @@ type Constructor = {
 	LISTEN_RATE: number;
 	UseInsecure: () -> ();
 	new: (address: string, token: string, enable_compression: boolean?) -> Monolith;
-	Connect: (self: Monolith) -> boolean;
+	ConnectAsync: (self: Monolith) -> boolean;
 }
 type Self = {
 	data: Data.Data;
@@ -42,6 +42,15 @@ function Monolith.new(address, token, enable_compression)
 	return setmetatable(self, Monolith)
 end
 
-
+function Monolith:ConnectAsync()
+	local connected_ok, connected = self.api:Connected()
+	if not connected_ok then
+		return connected_ok
+	end
+	if connected then
+		return connected
+	end
+	return self.api:Connect()
+end
 
 return Monolith
