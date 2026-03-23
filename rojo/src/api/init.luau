@@ -10,6 +10,7 @@ type Constructor = {
 	new: (address: string, token: string) -> Api;
 	Connected: (self: Api) -> (boolean, boolean);
 	Connect: (self: Api) -> boolean;
+	Disconnect: (self: Api) -> boolean;
 }
 export type Api = setmetatable<{ http: Http.Http }, typeof(Api)>
 
@@ -30,6 +31,11 @@ function Api:Connect()
 		Name = game.Name;
 		CreatorId = game.CreatorId;
 	})
+	return r_ok
+end
+
+function Api:Disconnect()
+	local r_ok, _r = self.http:PostAsync("/disconnect")
 	return r_ok
 end
 

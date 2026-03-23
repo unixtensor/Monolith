@@ -6,15 +6,12 @@ local Http = require(script.api.http)
 
 local Monolith = {} :: Constructor
 Monolith.__index = Monolith
-Monolith.DEV_MODE = false --RunService:IsStudio()
-
 -- The current limitation for sending and receiving external HTTP requests is 500 requests per minute.
 -- https://create.roblox.com/docs/reference/engine/classes/HttpService#RequestAsync
 Monolith.LISTEN_RATE = 5
 
 type Constructor = {
 	__index: Constructor;
-	DEV_MODE: boolean;
 	LISTEN_RATE: number;
 	UseInsecure: () -> ();
 	new: (address: string, token: string, enable_compression: boolean?) -> Monolith;
@@ -27,13 +24,21 @@ type Self = {
 }
 export type Monolith = setmetatable<Self, typeof(Monolith)>
 
+local init: boolean = false
+
+local function inited(self: Monolith)
+	init = true
+	game:BindToClose(function() self.api:Disconnect() end)
+	print(`Monolith connected on {game.PlaceId}.  JobId={game.JobId}`)
+end
+
 function Monolith.UseInsecure()
 	Http.__bypassInsecure = true
 end
 
 function Monolith.new(address, token, enable_compression)
-	assert(Http.Enabled, "Cannot proceed! Monolith REQUIRES http requests to be enabled for this game. STOPPING")
-	assert(Http.ValidAddress(address), `"{address}" Is not a valid http/https address. STOPPING`)
+	assert(Http.Enabled, "Cannot proceed! Monolith REQUIRES http requests to be enabled for this game.  STOPPING")
+	assert(Http.ValidAddress(address), `"{address}" Is not a valid http/https address.  STOPPING`)
 
 	local self = {}
 	self.data = Data.new()
@@ -43,6 +48,8 @@ function Monolith.new(address, token, enable_compression)
 end
 
 function Monolith:ConnectAsync()
+	assert(not init, "Monolith already started for this server instance.")
+
 	local connected_ok, connected = self.api:Connected()
 	if not connected_ok then
 		return connected_ok
@@ -50,7 +57,11 @@ function Monolith:ConnectAsync()
 	if connected then
 		return connected
 	end
-	return self.api:Connect()
+	local connect_ok = self.api:Connect()
+	if connect_ok then
+		inited(self)
+	end
+	return connect_ok
 end
 
 return Monolith

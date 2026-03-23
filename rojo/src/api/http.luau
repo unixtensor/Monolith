@@ -33,7 +33,7 @@ type Constructor = {
 	Insecure: boolean;
 	ValidAddress: (address: string) -> string?;
 	new: (address: string, token: string, compression: boolean?) -> Http;
-	PostAsync: <T>(self: Http, request: string, body: Json) -> (boolean, HttpResponseData<T>);
+	PostAsync: <T>(self: Http, request: string, body: Json?) -> (boolean, HttpResponseData<T>);
 	GetAsync: <T>(self: Http, request: string) -> (boolean, HttpResponseData<T>);
 }
 type Self = {
@@ -99,9 +99,9 @@ end
 function Http.new(address, token, compression)
 	if Http.Insecure then
 		if not Http.__bypassInsecure then
-			error("An insecure address is being used. STOPPING", 0)
+			error("An insecure address is being used.  STOPPING", 0)
 		end
-		warn("Monolith has been forcefully connected using a public insecure address. You're open to man-in-the-middle attacks!")
+		warn("Monolith has been forcefully connected using a public insecure address.  You're open to man-in-the-middle attacks!")
 	end
 
 	local self = {}
@@ -115,7 +115,7 @@ function Http:PostAsync(request, body)
 	local r = HttpService:RequestAsync(rest_builder(self, {
 		method = "POST";
 		request = request;
-		body = HttpService:JSONEncode(body);
+		body = HttpService:JSONEncode(body or {});
 	}))
 	return response_middleware(r)
 end
