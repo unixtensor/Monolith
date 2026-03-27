@@ -8,7 +8,7 @@ Data.__index = Data
 type Constructor = {
 	__index: Constructor;
 	new: () -> Data;
-	GameInstance: (self: Data) -> GameInstance.GameInstancePayload
+	Game: (self: Data) -> GameInstance.GameInstancePayload
 }
 type Self = {
 	GameInstance: GameInstance.GameInstance
@@ -21,7 +21,7 @@ function Data.new()
 	return setmetatable(self, Data)
 end
 
-function Data:GameInstance()
+function Data:Game()
 	return self.GameInstance:Collect()
 end
 

@@ -5,12 +5,14 @@ local Http = require(script.http)
 local Api = {} :: Constructor
 Api.__index = Api
 
+type ResponseOk = boolean
 type Constructor = {
 	__index: Constructor;
-	new: (address: string, token: string) -> Api;
-	Connected: (self: Api) -> (boolean, boolean);
-	Connect: (self: Api) -> boolean;
-	Disconnect: (self: Api) -> boolean;
+	new: (address: string, token: string, compression: boolean) -> Api;
+	Connected: (self: Api) -> (ResponseOk, boolean);
+	Connect: (self: Api) -> ResponseOk;
+	Disconnect: (self: Api) -> ResponseOk;
+	UploadInstance: (self: Api, Http.Json?) -> ResponseOk;
 }
 export type Api = setmetatable<{ http: Http.Http }, typeof(Api)>
 
@@ -36,6 +38,11 @@ end
 
 function Api:Disconnect()
 	local r_ok, _r = self.http:PostAsync("/disconnect")
+	return r_ok
+end
+
+function Api:UploadInstance(GameInstance)
+	local r_ok, _r = self.http:PostAsync("/connected/upload", GameInstance)
 	return r_ok
 end
 

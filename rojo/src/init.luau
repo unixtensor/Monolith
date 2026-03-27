@@ -26,9 +26,12 @@ export type Monolith = setmetatable<Self, typeof(Monolith)>
 
 local init: boolean = false
 
-local function inited(self: Monolith)
-	init = true
-	game:BindToClose(function() self.api:Disconnect() end)
+local function main(self: Monolith)
+	game:BindToClose(function()
+		self.api:Disconnect()
+	end)
+	self.api:UploadInstance(self.data:Game())
+
 	print(`Monolith connected on {game.PlaceId}.  JobId={game.JobId}`)
 end
 
@@ -59,7 +62,8 @@ function Monolith:ConnectAsync()
 	end
 	local connect_ok = self.api:Connect()
 	if connect_ok then
-		inited(self)
+		init = true
+		main(self)
 	end
 	return connect_ok
 end

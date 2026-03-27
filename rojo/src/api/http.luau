@@ -32,9 +32,9 @@ type Constructor = {
 	Enabled: boolean;
 	Insecure: boolean;
 	ValidAddress: (address: string) -> string?;
-	new: (address: string, token: string, compression: boolean?) -> Http;
-	PostAsync: <T>(self: Http, request: string, body: Json?) -> (boolean, HttpResponseData<T>);
-	GetAsync: <T>(self: Http, request: string) -> (boolean, HttpResponseData<T>);
+	new: (address: string, token: string, compression: boolean) -> Http;
+	PostAsync: <T>(self: Http, req: string, body: Json?) -> (boolean, HttpResponseData<T>);
+	GetAsync: <T>(self: Http, req: string) -> (boolean, HttpResponseData<T>);
 }
 type Self = {
 	address: string;
@@ -62,14 +62,14 @@ local function rest_builder(self: Http, rest: RestDetails): Json
 	return payload
 end
 
-local function response_middleware<T>(r: HttpResponseData): (boolean, HttpResponseData<T>)
-	if r.Body then
-		r.Body = HttpService:JSONDecode(r.Body)
+local function response_middleware<T>(res: HttpResponseData, req: string, body: Json?): (boolean, HttpResponseData<T>)
+	if res.Success and res.Body then
+		res.Body = HttpService:JSONDecode(res.Body)
 	end
-	if not r.Success then
-		warn("Request failed.", r.StatusCode, r.StatusMessage, r.Body)
+	if not res.Success then
+		warn(req, "-", res.StatusCode, res.StatusMessage, res.Body, "\nrequest body=", body)
 	end
-	return r.Success, r
+	return res.Success, res
 end
 
 local function local_address(host: string): string?
@@ -112,21 +112,21 @@ function Http.new(address, token, compression)
 	return setmetatable(self, Http)
 end
 
-function Http:PostAsync(request, body)
+function Http:PostAsync(req, body)
 	local r = HttpService:RequestAsync(rest_builder(self, {
 		method = "POST";
-		request = request;
+		request = req;
 		body = HttpService:JSONEncode(body or {});
 	}))
-	return response_middleware(r)
+	return response_middleware(r, req, body)
 end
 
-function Http:GetAsync(request)
+function Http:GetAsync(req)
 	local r = HttpService:RequestAsync(rest_builder(self, {
 		method = "GET";
-		request = request;
+		request = req;
 	}))
-	return response_middleware(r)
+	return response_middleware(r, req)
 end
 
 return Http
