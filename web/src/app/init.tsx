@@ -12,14 +12,14 @@ function Loading() {
 	);
 }
 
-function Error() {
+function Error({ status }: { status: string }) {
 	useTitle("Server Error");
 
 	return (
 		<main className="w-screen h-screen flex justify-center items-center">
-			<Card className="flex flex-col content-center items-center p-8 gap-5 bg-[#140003]">
-				<CircleX />
-				<p>Server is unreachable</p>
+			<Card className="flex flex-col content-center items-center p-8 gap-5 bg-[#260909]">
+				<CircleX className="w-7 h-7" />
+				<p>{status}</p>
 			</Card>
 		</main>
 	);
@@ -29,7 +29,6 @@ export default function GetConnected() {
 	const s_alive = useServerAlive();
 
 	if (s_alive === null) return <Loading />;
-	if (s_alive === false) return <Error />;
-	// if (s_alive === Connected.False) return <Navigate to="/login" replace />;
+	if (s_alive.ok === false) return <Error status={s_alive.status} />;
 	return <Outlet />;
 }
