@@ -14,7 +14,7 @@ export default function ServerAlive({
 	const [alive, setAlive] = useState<aliveState | null>(null);
 
 	useEffect(() => {
-		fetch("/api/v1/connected").then((r) =>
+		fetch("/api/v1/").then((r) =>
 			setAlive({ ok: r.ok, status: `${r.status} | ${r.statusText}` }),
 		);
 	}, []);

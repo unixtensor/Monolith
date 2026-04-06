@@ -51,7 +51,7 @@ local function rest_builder(self: Http, rest: RestDetails): Json
 		Method = rest.method;
 		Headers = {
 			["Content-Type"] = "application/json";
-			["x-api-key"] = self.token;
+			["X-API-Key"] = self.token;
 		},
 		Body = rest.body;
 	}

@@ -1,32 +1,27 @@
 package game
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
 
-type gzip []byte
-
-type instance struct {
-	Compressed bool
-	InnerGzip  gzip
-	Inner      gin.H
-}
+	"github.com/gin-gonic/gin"
+)
 
 type Game struct {
-	Metadata GameMetadata
-	Instance instance
-}
-
-type GameMetadata struct {
-	CreatorId int    `json:"CreatorId"`
-	Id        int    `json:"Id"`
 	Name      string `json:"Name"`
+	JobId     string `json:"JobId"`
+	CreatorId uint   `json:"CreatorId"`
+	Instance  instance
 }
 
-var Current Game = Game{}
-
-func (g *Game) Connected() bool {
-	return g.Metadata.Id != 0
+func (g *Game) Connect(ctx *gin.Context) {
+	if err := ctx.ShouldBindJSON(&g); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.Status(http.StatusOK)
 }
 
-func Disconnect() {
-	Current = Game{}
+func (g *Game) Connected(ctx *gin.Context) {
+	gameid := ctx.Param("gameId")
+	ctx.JSON(http.StatusOK, Connected(gameid))
 }
