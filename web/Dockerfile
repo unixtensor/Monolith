@@ -12,7 +12,7 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 RUN echo 'server { \
 	listen 8000; \
 	location /api/ { \
-		proxy_pass http://server:3000; \
+		proxy_pass http://monolith-server:3000; \
 		proxy_set_header Host $host; \
 		proxy_set_header X-Real-IP $remote_addr; \
 	} \

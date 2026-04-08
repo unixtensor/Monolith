@@ -1,15 +1,15 @@
 services:
-    server:
+    monolith-server:
         build: .
-        container_name: monolith_server
+        container_name: monolith-server
         restart: unless-stopped
         environment:
             - TOKEN=${TOKEN}
         networks:
             - monolith-network
-    web:
+    monolith-web:
         build: ./web
-        container_name: monolith_web
+        container_name: monolith-web
         restart: unless-stopped
         ports:
             - "8000:8000"
