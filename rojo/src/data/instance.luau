@@ -22,7 +22,7 @@ GameInstance.monitor = {
 type QueryBody = {
 	ClassName: string;
 	Name: string;
-	children: QueryBody?;
+	children: {QueryBody}?;
 }
 export type GameInstancePayload = {
 	[string]: QueryBody
@@ -36,7 +36,7 @@ type Constructor = {
 }
 export type GameInstance = setmetatable<{ payload: GameInstancePayload }, typeof(GameInstance)>
 
-local function body(instance: Instance, children: QueryBody?): QueryBody
+local function body(instance: Instance, children: {QueryBody}?): QueryBody
 	local skeleton: QueryBody = {
 		ClassName = instance.ClassName,
 		Name = instance.Name
@@ -52,8 +52,9 @@ local function query(instance: Instance): QueryBody
     local inst_c_collection = nil
 
     if #inst_c ~= 0 then
+   		inst_c_collection = {}
         for _, child in inst_c do
-            inst_c_collection = query(child)
+        	table.insert(inst_c_collection, query(child))
         end
     end
     return body(instance, inst_c_collection)
