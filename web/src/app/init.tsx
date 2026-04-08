@@ -1,15 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { CircleX, LoaderPinwheel } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Navigate, Outlet } from "react-router";
+import { Outlet } from "react-router";
+import useServerAlive from "./context/ServerAlive/context";
 import { useTitle } from "./hooks/useTitle";
-
-type Connection = number;
-const Connected = {
-	True: 0,
-	False: 1,
-	Error: 2,
-};
 
 function Loading() {
 	return (
@@ -19,42 +12,23 @@ function Loading() {
 	);
 }
 
-function Error() {
+function Error({ status }: { status: string }) {
 	useTitle("Server Error");
 
 	return (
 		<main className="w-screen h-screen flex justify-center items-center">
-			<Card className="flex flex-col content-center items-center p-8 gap-5 bg-[#140003]">
-				<CircleX />
-				<p>Server is unreachable</p>
+			<Card className="flex flex-col content-center items-center p-8 gap-5 bg-[#260909]">
+				<CircleX className="w-7 h-7" />
+				<p>{status}</p>
 			</Card>
 		</main>
 	);
-}
-
-function useServerAlive(): Connection | null {
-	const [connected, setConnected] = useState<Connection | null>(null);
-
-	useEffect(() => {
-		(async () => {
-			try {
-				const con_req = await fetch("/api/v1/connected");
-				if (!con_req.ok) return setConnected(Connected.Error);
-				const isConnected = await con_req.json();
-				setConnected(isConnected ? Connected.True : Connected.False);
-			} catch {
-				setConnected(Connected.Error);
-			}
-		})();
-	}, []);
-	return connected;
 }
 
 export default function GetConnected() {
 	const s_alive = useServerAlive();
 
 	if (s_alive === null) return <Loading />;
-	if (s_alive === Connected.True) return <Outlet />;
-	if (s_alive === Connected.False) return <Navigate to="/login" replace />;
-	return <Error />;
+	if (s_alive.ok === false) return <Error status={s_alive.status} />;
+	return <Outlet />;
 }

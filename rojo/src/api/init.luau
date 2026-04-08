@@ -1,6 +1,7 @@
 --!strict
 
 local Http = require(script.http)
+local RS = game:GetService("RunService")
 
 local Api = {} :: Constructor
 Api.__index = Api
@@ -16,6 +17,9 @@ type Constructor = {
 }
 export type Api = setmetatable<{ http: Http.Http }, typeof(Api)>
 
+local placeid: number = game.PlaceId
+local jobid: string = RS:IsStudio() and "studio" or game.JobId
+
 function Api.new(address, token, compression)
 	return setmetatable({
 		http = Http.new(address, token, compression)
@@ -23,13 +27,12 @@ function Api.new(address, token, compression)
 end
 
 function Api:Connected()
-	local r_ok, r = self.http:GetAsync("/connected")
+	local r_ok, r = self.http:GetAsync(`/{placeid}`)
 	return r_ok, r.Body :: boolean
 end
 
 function Api:Connect()
-	local r_ok, _r = self.http:PostAsync("/connect", {
-		Id = game.GameId;
+	local r_ok, _r = self.http:PostAsync(`/{placeid}/{jobid}`, {
 		Name = game.Name;
 		CreatorId = game.CreatorId;
 	})
@@ -37,7 +40,7 @@ function Api:Connect()
 end
 
 function Api:Disconnect()
-	local r_ok, _r = self.http:PostAsync("/disconnect")
+	local r_ok, _r = self.http:PostAsync(`/{placeid}/{jobid}/disconnect`)
 	return r_ok
 end
 
