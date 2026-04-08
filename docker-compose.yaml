@@ -1,0 +1,21 @@
+services:
+    server:
+        build: .
+        container_name: monolith_server
+        restart: unless-stopped
+        environment:
+            - TOKEN=${TOKEN}
+        networks:
+            - monolith-network
+    web:
+        build: ./web
+        container_name: monolith_web
+        restart: unless-stopped
+        ports:
+            - "8000:8000"
+        networks:
+            - monolith-network
+
+networks:
+    monolith-network:
+        driver: bridge

@@ -28,3 +28,6 @@ docker-web:
 
 docker-server:
 	docker build . -t monolith_server
+
+docker:
+	docker compose up
