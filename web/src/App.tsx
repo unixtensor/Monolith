@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router";
 import GetConnected from "./app/init";
-import Login from "./app/Login/Login";
+import Login from "./app/login/login";
 
 function App() {
 	return (
