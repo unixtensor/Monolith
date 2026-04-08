@@ -8,7 +8,7 @@ import (
 	game "github.com/unixtensor/monolith/pkg/games"
 )
 
-func Upload(ctx *gin.Context) {
+func UploadInstance(ctx *gin.Context) {
 	place_id := ctx.Param("placeId")
 	job_id := ctx.Param("jobId")
 
@@ -35,19 +35,19 @@ func Upload(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
-func Get(ctx *gin.Context) {
+func GetInstance(ctx *gin.Context) {
 	place_id := ctx.Param("placeId")
 	job_id := ctx.Param("jobId")
 
 	game, game_ok := game.GetGame(place_id, job_id)
 	if !game_ok {
-		ctx.JSON(http.StatusBadGateway, gin.H{"error": ""})
+		ctx.JSON(http.StatusBadGateway, gin.H{"error": "game " + place_id + "/" + job_id + " does not exist."})
 		return
 	}
-	if game.Instance.Compressed {
+	if game.Instance.InnerGzip != nil {
 		ctx.Header("Content-Encoding", "gzip")
 		ctx.Data(http.StatusOK, "application/octet-stream", game.Instance.InnerGzip)
 		return
 	}
-	ctx.JSON(http.StatusOK, &game.Instance.Inner)
+	ctx.JSON(http.StatusOK, game.Instance.Inner)
 }

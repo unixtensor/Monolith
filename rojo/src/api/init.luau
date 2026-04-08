@@ -45,7 +45,7 @@ function Api:Disconnect()
 end
 
 function Api:UploadInstance(GameInstance)
-	local r_ok, _r = self.http:PostAsync("/connected/upload", GameInstance)
+	local r_ok, _r = self.http:PostAsync(`/{placeid}/{jobid}/instance`, GameInstance)
 	return r_ok
 end
 

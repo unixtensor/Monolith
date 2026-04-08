@@ -17,6 +17,7 @@ func (g *Game) Add(place_id PlaceId, job_id JobId) {
 	if !ok {
 		Games[place_id] = make(Servers)
 	}
+	g.Instance = &Instance{}
 	Games[place_id][job_id] = *g
 }
 
