@@ -43,7 +43,7 @@ type Self = {
 }
 export type Http = setmetatable<Self, typeof(Http)>
 
-local api_root: string = "/api/v1"
+local api_root: "/api/v1" = "/api/v1"
 
 local function rest_builder(self: Http, rest: RestDetails): Json
 	local payload = {
@@ -64,7 +64,10 @@ end
 
 local function response_middleware<T>(res: HttpResponseData, req: string, body: Json?): (boolean, HttpResponseData<T>)
 	if res.Success and res.Body then
-		res.Body = HttpService:JSONDecode(res.Body)
+		local ok, d = pcall(HttpService.JSONDecode, HttpService, res.Body)
+		if ok then
+			res.Body = d
+		end
 	end
 	if not res.Success then
 		warn(req, "-", res.StatusCode, res.StatusMessage, res.Body, "\nrequest body=", body)

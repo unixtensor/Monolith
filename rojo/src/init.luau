@@ -30,7 +30,7 @@ local function main(self: Monolith)
 	game:BindToClose(function()
 		self.api:Disconnect()
 	end)
-	self.api:UploadInstance(self.data:Game())
+	-- self.api:UploadInstance(self.data:Game())
 
 	print(`Monolith connected on {game.PlaceId}.  JobId={game.JobId}`)
 end
