@@ -6,10 +6,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func VerifyCookie(ctx *gin.Context, token string) bool {
+	token_cookie, _ := ctx.Cookie("session_token")
+	match := token_cookie == token
+	if !match {
+		//delete
+		ctx.SetCookieData(&http.Cookie{
+			Name:     "session_token",
+			Value:    "",
+			MaxAge:   -1,
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteStrictMode,
+		})
+	}
+	return match
+}
+
 func VerifyToken(token string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		token_cookie, _ := ctx.Cookie("session_token")
-		if token_cookie == token {
+		if VerifyCookie(ctx, token) {
 			ctx.Next()
 			return
 		}

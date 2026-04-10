@@ -3,16 +3,16 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { Toaster } from "sonner";
 import App from "./App.tsx";
-import ServerAlive from "./app/context/ServerAlive/provider.tsx";
+import Auth from "./app/context/Auth/provider.tsx";
 import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
-		<ServerAlive>
+		<Auth>
 			<BrowserRouter>
 				<App />
 				<Toaster />
 			</BrowserRouter>
-		</ServerAlive>
+		</Auth>
 	</StrictMode>,
 );

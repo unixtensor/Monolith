@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { CircleX, LoaderPinwheel } from "lucide-react";
 import { Outlet } from "react-router";
-import useServerAlive from "./context/ServerAlive/context";
+import useAuth from "./context/Auth/context";
 import { useTitle } from "./hooks/useTitle";
+import Login from "./login/login";
 
 function Loading() {
 	return (
@@ -12,23 +13,25 @@ function Loading() {
 	);
 }
 
-function Error({ status }: { status: string }) {
+function Error({ children }: { children: string }) {
 	useTitle("Server Error");
 
 	return (
 		<main className="w-screen h-screen flex justify-center items-center">
 			<Card className="flex flex-col content-center items-center p-8 gap-5 bg-[#260909]">
 				<CircleX className="w-7 h-7" />
-				<p>{status}</p>
+				<p>{children}</p>
 			</Card>
 		</main>
 	);
 }
 
-export default function GetConnected() {
-	const s_alive = useServerAlive();
+export default function Auth() {
+	const auth = useAuth();
 
-	if (s_alive === null) return <Loading />;
-	if (s_alive.ok === false) return <Error status={s_alive.status} />;
+	if (!auth) return <Loading />;
+	if (auth?.status === 401) return <Login />;
+	if (auth?.status !== 200)
+		return <Error>{`${auth?.status} - ${auth?.statusText}`}</Error>;
 	return <Outlet />;
 }

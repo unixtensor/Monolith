@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"regexp"
 
 	"github.com/unixtensor/monolith/pkg/api"
 )
@@ -14,6 +15,9 @@ func main() {
 
 	if !token_set {
 		log.Fatal("Environment variable: TOKEN is not set, STOPPING.")
+	}
+	if !regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(token) {
+		log.Fatalf("TOKEN must only contain letters and numbers, STOPPING.")
 	}
 	if !port_set {
 		port = "3000"
