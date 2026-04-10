@@ -7,9 +7,9 @@ services:
             - TOKEN=${TOKEN}
         networks:
             - monolith-network
-    monolith-web:
+    monolith:
         build: ./web
-        container_name: monolith-web
+        container_name: monolith
         restart: unless-stopped
         ports:
             - "8000:8000"
