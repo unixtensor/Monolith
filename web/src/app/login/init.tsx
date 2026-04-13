@@ -2,36 +2,47 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { LoaderCircle } from "lucide-react";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router";
-import useAuth from "../context/Auth/context";
+import useAuth from "../context/auth/context";
 import { useTitle } from "../hooks/useTitle";
+
+interface loginData {
+	LoginProgress?: boolean;
+	Failed: boolean;
+	FailedReason?: string;
+}
 
 function SubmitToken() {
 	const input = useRef<HTMLInputElement>(null);
-	const [loggingIn, setLoggingIn] = useState<boolean>(false);
-	const [loginFail, setLoginFail] = useState<string | null>(null);
+	const [loginData, setLoginData] = useState<loginData>({ Failed: false });
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 
 	const handleLogin = async () => {
-		setLoginFail(null);
-		setLoggingIn(true);
+		setLoginData({ LoginProgress: true, Failed: false });
 
-		const r = await fetch("/api/v1/login", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(input.current?.value),
-		});
+		const r = await axios.post(
+			"/api/v1",
+			JSON.stringify(input.current?.value),
+			{ validateStatus: () => true },
+		);
 		if (r.status === 200) {
 			navigate("/dashboard", { replace: true });
-			location.reload(); //lul
+			queryClient
+				.refetchQueries({ queryKey: ["auth"] })
+				.catch(() => location.reload());
 		} else if (r.status === 401) {
-			setLoginFail("Incorrect token");
+			setLoginData({ FailedReason: "Incorrect token", Failed: true });
 		} else {
-			setLoginFail(`${r.status} - ${r.statusText}`);
+			setLoginData({
+				FailedReason: `${r.status} - ${r.statusText}`,
+				Failed: true,
+			});
 		}
-		setLoggingIn(false);
 	};
 
 	return (
@@ -39,24 +50,26 @@ function SubmitToken() {
 			<Field>
 				<Input
 					ref={input}
-					className={`text-center bg-[#141414] ${loginFail ? "border border-red-500" : "border-none"}`}
+					className={`text-center bg-[#141414] ${loginData.Failed ? "border border-red-500" : "border-none"}`}
 					placeholder="••••••"
 					id="password"
 					type="password"
 					required
 				/>
-				{loginFail && (
-					<p className="text-red-500! font-bold">{loginFail}</p>
+				{loginData.Failed && (
+					<p className="text-red-500! font-bold">
+						{loginData.FailedReason}
+					</p>
 				)}
 			</Field>
 			<Field>
 				<Button
-					disabled={loggingIn}
+					disabled={loginData.LoginProgress}
 					onClick={handleLogin}
 					className="h-10"
 					type="submit"
 				>
-					{loggingIn ? (
+					{loginData.LoginProgress ? (
 						<LoaderCircle className="animate-spin" />
 					) : (
 						"Login"
@@ -70,8 +83,9 @@ function SubmitToken() {
 export default function Login() {
 	useTitle("Login");
 	const auth = useAuth();
-	//If the user manually navigates here, check and redirect them
-	if (auth?.status === 200) return <Navigate to="/dashboard" replace />;
+
+	if (!auth) return <></>;
+	if (!auth.guest) return <Navigate to="/dashboard" replace />;
 
 	return (
 		<main className="w-screen h-screen flex justify-center items-center">
