@@ -1,9 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { CircleX, LoaderPinwheel } from "lucide-react";
 import { Outlet } from "react-router";
-import useAuth from "./context/Auth/context";
+import useAuth from "./context/auth/context";
 import { useTitle } from "./hooks/useTitle";
-import Login from "./login/login";
+import Login from "./login/init";
 
 function Loading() {
 	return (
@@ -13,7 +13,7 @@ function Loading() {
 	);
 }
 
-function Error({ children }: { children: string }) {
+function ServerError({ children }: { children: string }) {
 	useTitle("Server Error");
 
 	return (
@@ -29,9 +29,9 @@ function Error({ children }: { children: string }) {
 export default function Auth() {
 	const auth = useAuth();
 
-	if (!auth) return <Loading />;
-	if (auth?.status === 401) return <Login />;
-	if (auth?.status !== 200)
-		return <Error>{`${auth?.status} - ${auth?.statusText}`}</Error>;
+	if (!auth) return <></>;
+	if (auth.isLoading) return <Loading />;
+	if (auth.error) return <ServerError>{auth.error.message}</ServerError>;
+	if (auth.guest) return <Login />;
 	return <Outlet />;
 }
