@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
 	Sidebar as ShadSidebar,
 	SidebarContent,
@@ -5,6 +6,7 @@ import {
 	SidebarGroup,
 	SidebarHeader,
 } from "@/components/ui/sidebar";
+import Logout from "./logout";
 
 export default function Sidebar() {
 	return (
@@ -13,10 +15,15 @@ export default function Sidebar() {
 				<h1>Monolith</h1>
 			</SidebarHeader>
 			<SidebarContent>
-				<SidebarGroup />
+				<SidebarGroup>
+					<Button>Servers</Button>
+					<Button>Graph</Button>
+				</SidebarGroup>
 				<SidebarGroup />
 			</SidebarContent>
-			<SidebarFooter />
+			<SidebarFooter>
+				<Logout />
+			</SidebarFooter>
 		</ShadSidebar>
 	);
 }
