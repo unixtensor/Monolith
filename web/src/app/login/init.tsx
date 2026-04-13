@@ -84,8 +84,6 @@ function SubmitToken() {
 export default function Login() {
 	useTitle("Login");
 	const auth = useAuth();
-
-	if (!auth) return <></>;
 	if (!auth.guest) return <Navigate to="/dashboard" replace />;
 
 	return (

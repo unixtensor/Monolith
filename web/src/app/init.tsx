@@ -29,7 +29,6 @@ function ServerError({ children }: { children: string }) {
 export default function Auth() {
 	const auth = useAuth();
 
-	if (!auth) return <></>;
 	if (auth.isLoading) return <Loading />;
 	if (auth.error) return <ServerError>{auth.error.message}</ServerError>;
 	if (auth.guest) return <Login />;
