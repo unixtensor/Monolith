@@ -16,7 +16,7 @@ export default function Dashboard({
 		<main className="bg-sidebar">
 			<SidebarProvider>
 				<Sidebar />
-				<main className="bg-background w-full m-3 overflow-y-auto overflow-x-hidden">
+				<main className="bg-background w-full m-3 ml-0 overflow-y-auto overflow-x-hidden">
 					<header className="flex flex-col justify-center mt-2 mb-2">
 						<div className="flex gap-3 items-center ml-3">
 							<SidebarTrigger />
