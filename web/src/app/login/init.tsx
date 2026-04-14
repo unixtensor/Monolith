@@ -85,7 +85,7 @@ function SubmitToken() {
 export default function Login() {
 	useTitle("Login");
 	const auth = useAuth();
-	if (!auth.guest) return <Navigate to="/dashboard" replace />;
+	if (!auth.guest) return <Navigate to="/servers" replace />;
 
 	return (
 		<main className="w-screen h-screen flex justify-center items-center">
