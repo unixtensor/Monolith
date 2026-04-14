@@ -8,9 +8,5 @@ import (
 )
 
 func Servers(ctx *gin.Context) {
-	keys := make([]string, 0, len(game.Games))
-	for key := range game.Games {
-		keys = append(keys, key)
-	}
-	ctx.JSON(http.StatusOK, keys)
+	ctx.JSON(http.StatusOK, game.Games)
 }

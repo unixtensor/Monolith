@@ -5,13 +5,13 @@ type PlaceId = string
 type Servers = map[JobId]Game
 
 type Game struct {
-	Name       string  `json:"Name" binding:"required"`
-	CreatorId  uint    `json:"CreatorId"`
-	PlaceId    uint    `json:"PlaceId"`
-	MaxPlayers uint    `json:"MaxPlayers"`
-	Players    uint    `json:"Players"`
-	UpTime     float64 `json:"UpTime"`
-	Instance   *Instance
+	Name       string    `json:"Name" binding:"required"`
+	CreatorId  uint      `json:"CreatorId"`
+	PlaceId    uint      `json:"PlaceId"`
+	MaxPlayers uint      `json:"MaxPlayers"`
+	Players    uint      `json:"Players"`
+	UpTime     float64   `json:"UpTime"`
+	Instance   *Instance `json:"-"`
 }
 
 var Games = make(map[PlaceId]Servers)
