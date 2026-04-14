@@ -1,7 +1,9 @@
 --!strict
 
 local Http = require(script.http)
-local RS = game:GetService("RunService")
+
+local Players = game:GetService('Players')
+local RS = game:GetService('RunService')
 
 local Api = {} :: Constructor
 Api.__index = Api
@@ -35,6 +37,9 @@ function Api:Connect()
 	local r_ok, _r = self.http:PostAsync(`/{placeid}/{jobid}`, {
 		Name = game.Name;
 		CreatorId = game.CreatorId;
+		MaxPlayers = Players.MaxPlayers;
+		Players = #Players:GetPlayers();
+		UpTime = workspace.DistributedGameTime;
 	})
 	return r_ok
 end
