@@ -14,14 +14,18 @@ export function LoggedIn(s: number): boolean {
 export function NeedLogin(s: number): boolean {
 	return s === 401;
 }
+
 export const Context = createContext<AuthContext>({
 	isLoading: true,
 	error: null,
 });
 
-export function useAuth() {
-	return useContext(Context);
-}
+export const useAuth = () => {
+	const context = useContext(Context);
+	if (context === undefined)
+		throw new Error("useAuth must be used within a AuthProvider");
+	return context;
+};
 
 export default function AuthProvider({
 	children,
