@@ -38,7 +38,7 @@ function SubmitToken() {
 				.catch(() => location.reload());
 			toast.success("Login successful");
 		} else if (NeedLogin(r.status)) {
-			setLoginData({ FailedReason: "Incorrect token", Failed: true });
+			setLoginData({ FailedReason: "Invalid token", Failed: true });
 		} else {
 			setLoginData({
 				FailedReason: `${r.status} - ${r.statusText}`,
@@ -49,20 +49,22 @@ function SubmitToken() {
 
 	return (
 		<FieldGroup>
-			<Field>
+			<Field data-invalid={loginData.Failed}>
+				<FieldLabel
+					htmlFor="textarea-invalid"
+					className="flex items-center"
+				>
+					{loginData.FailedReason}
+				</FieldLabel>
 				<Input
 					ref={input}
-					className={`text-center bg-[#141414] ${loginData.Failed ? "border border-red-500" : "border-none"}`}
-					placeholder="••••••"
+					className="text-center bg-[#141414]"
+					placeholder="••••••••••••••••••••••••"
 					id="password"
 					type="password"
 					required
+					aria-invalid={loginData.Failed}
 				/>
-				{loginData.Failed && (
-					<p className="text-red-500! font-bold">
-						{loginData.FailedReason}
-					</p>
-				)}
 			</Field>
 			<Field>
 				<Button
@@ -91,9 +93,6 @@ export default function Login() {
 		<main className="w-screen h-screen flex justify-center items-center">
 			<div className="flex flex-col gap-6 w-100 text-center">
 				<Card>
-					<CardHeader className="my-1">
-						<CardTitle>Enter token to gain access</CardTitle>
-					</CardHeader>
 					<CardContent>
 						<form>
 							<SubmitToken />
