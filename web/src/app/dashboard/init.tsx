@@ -3,6 +3,19 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useTitle } from "../hooks/useTitle";
 import Sidebar from "./sidebar/init";
 
+function Header({ children }: { children: string }) {
+	return (
+		<header className="flex flex-col justify-center mt-2 mb-2">
+			<div className="flex gap-3 items-center ml-3">
+				<SidebarTrigger />
+				<Separator orientation="vertical" className="h-4 my-auto" />
+				<h1>{children}</h1>
+			</div>
+			<Separator className="mt-2 mb-2" />
+		</header>
+	);
+}
+
 export default function Dashboard({
 	title,
 	children,
@@ -17,18 +30,8 @@ export default function Dashboard({
 			<SidebarProvider>
 				<Sidebar />
 				<main className="bg-background w-full overflow-y-auto overflow-x-hidden">
-					<header className="flex flex-col justify-center mt-2 mb-2">
-						<div className="flex gap-3 items-center ml-3">
-							<SidebarTrigger />
-							<Separator
-								orientation="vertical"
-								className="h-4 my-auto"
-							/>
-							<h1>{title}</h1>
-						</div>
-						<Separator className="mt-2 mb-2" />
-					</header>
-					<main className="mx-5">{children}</main>
+					<Header>{title}</Header>
+					<main className="mx-4">{children}</main>
 				</main>
 			</SidebarProvider>
 		</main>

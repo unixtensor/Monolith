@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldGroup } from "@/components/ui/field";
+import { Card, CardContent } from "@/components/ui/card";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import api from "@/lib/axios";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { LoaderCircle } from "lucide-react";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router";
@@ -26,13 +26,11 @@ function SubmitToken() {
 	const handleLogin = async () => {
 		setLoginData({ LoginProgress: true, Failed: false });
 
-		const r = await axios.post(
-			"/api/v1",
-			JSON.stringify(input.current?.value),
-			{ validateStatus: () => true },
-		);
+		const r = await api.post("", JSON.stringify(input.current?.value), {
+			validateStatus: () => true,
+		});
 		if (LoggedIn(r.status)) {
-			navigate("/dashboard", { replace: true });
+			navigate("/servers", { replace: true });
 			queryClient
 				.refetchQueries({ queryKey: ["auth"] })
 				.catch(() => location.reload());
