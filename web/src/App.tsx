@@ -1,7 +1,9 @@
+import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import Auth from "./app/init";
 import Login from "./app/login/init";
-import Servers from "./app/servers/init";
+
+const Servers = lazy(() => import("./app/servers/init"));
 
 function App() {
 	return (

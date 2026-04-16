@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { CircleX, LoaderPinwheel } from "lucide-react";
+import { Suspense } from "react";
 import { Outlet } from "react-router";
 import { useAuth } from "./auth/init";
 import { useTitle } from "./hooks/useTitle";
@@ -32,5 +33,10 @@ export default function Auth() {
 	if (auth.isLoading) return <Loading />;
 	if (auth.error) return <ServerError>{auth.error.message}</ServerError>;
 	if (auth.guest) return <Login />;
-	return <Outlet />;
+
+	return (
+		<Suspense fallback={<Loading />}>
+			<Outlet />
+		</Suspense>
+	);
 }
