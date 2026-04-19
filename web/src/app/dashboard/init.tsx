@@ -1,7 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Outlet } from "react-router";
-import ServersProvider from "./servers";
+import ServersProvider from "./games";
 import Sidebar from "./sidebar/init";
 
 function Header() {

@@ -30,7 +30,7 @@ function SubmitToken() {
 			validateStatus: () => true,
 		});
 		if (LoggedIn(r.status)) {
-			navigate("/servers", { replace: true });
+			navigate("/games", { replace: true });
 			queryClient
 				.refetchQueries({ queryKey: ["auth"] })
 				.catch(() => location.reload());
@@ -85,7 +85,7 @@ function SubmitToken() {
 export default function Login() {
 	useTitle("Login");
 	const auth = useAuth();
-	if (!auth.guest) return <Navigate to="/servers" replace />;
+	if (!auth.guest) return <Navigate to="/games" replace />;
 
 	return (
 		<main className="w-screen h-screen flex justify-center items-center">

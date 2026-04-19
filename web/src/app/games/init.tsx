@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
-import { useServers } from "../dashboard/servers";
+import { useServers } from "../dashboard/games";
 
 function NoGamesRunning() {
 	return (

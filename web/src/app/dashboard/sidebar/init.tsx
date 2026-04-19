@@ -25,7 +25,7 @@ import {
 	ServerIcon,
 } from "lucide-react";
 import { Link } from "react-router";
-import { useServers } from "../servers";
+import { useServers } from "../games";
 import Logout from "./logout";
 
 function Games() {

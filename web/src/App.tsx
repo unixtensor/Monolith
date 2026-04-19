@@ -4,16 +4,16 @@ import Auth from "./app/init";
 import Login from "./app/login/init";
 
 const Dashboard = lazy(() => import("./app/dashboard/init"));
-const Servers = lazy(() => import("./app/servers/init"));
+const Games = lazy(() => import("./app/games/init"));
 
 function App() {
 	return (
 		<Routes>
 			<Route path="/login" element={<Login />} />
-			<Route path="*" element={<Navigate to="/servers" replace />} />
+			<Route path="*" element={<Navigate to="/games" replace />} />
 			<Route element={<Auth />}>
 				<Route element={<Dashboard />}>
-					<Route path="/servers" index element={<Servers />} />
+					<Route path="/games" index element={<Games />} />
 					<Route path="/:placeId/" />
 					<Route path="/:placeId/:jobId" />
 				</Route>

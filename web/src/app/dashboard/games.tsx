@@ -2,7 +2,7 @@ import api from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext } from "react";
 
-interface Games {
+interface GamesSerialized {
 	[placeId: string]: {
 		[jobId: string]: JobInfo;
 	};
@@ -13,30 +13,30 @@ interface JobInfo {
 	Players: number;
 	UpTime: number;
 }
-export interface Server extends JobInfo {
+export interface Game extends JobInfo {
 	PlaceId: string;
 	JobId: string;
 }
-export interface ServersContext {
-	data: Server[];
+export interface GamesContext {
+	data: Game[];
 	isLoading: boolean;
 	error: Error | null;
 }
 
-const ServersContext = createContext<ServersContext>({
+const GamesContext = createContext<GamesContext>({
 	data: [],
 	isLoading: true,
 	error: null,
 });
 
 export const useServers = () => {
-	const context = useContext(ServersContext);
+	const context = useContext(GamesContext);
 	if (context === undefined)
-		throw new Error("useAuth must be used within a ServersProvider");
+		throw new Error("useAuth must be used within a GamesProvider");
 	return context;
 };
 
-function to_array(o: Games): Server[] {
+function to_array(o: GamesSerialized): Game[] {
 	return Object.entries(o).flatMap(([PlaceId, jobs]) =>
 		Object.entries(jobs).map(([JobId, job]) => ({
 			PlaceId,
@@ -46,7 +46,7 @@ function to_array(o: Games): Server[] {
 	);
 }
 
-export default function ServersProvider({
+export default function GamesProvider({
 	children,
 }: {
 	children: React.ReactNode;
@@ -55,14 +55,16 @@ export default function ServersProvider({
 		data = [],
 		isLoading,
 		error,
-	} = useQuery<Server[]>({
+	} = useQuery<Game[]>({
 		queryKey: ["games-servers"],
 		queryFn: () =>
-			api.get<Games>("/games-servers").then((r) => to_array(r.data)),
+			api
+				.get<GamesSerialized>("/games-servers")
+				.then((r) => to_array(r.data)),
 	});
 	return (
-		<ServersContext.Provider value={{ data, isLoading, error }}>
+		<GamesContext.Provider value={{ data, isLoading, error }}>
 			{children}
-		</ServersContext.Provider>
+		</GamesContext.Provider>
 	);
 }
