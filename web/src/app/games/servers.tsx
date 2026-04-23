@@ -18,9 +18,7 @@ export default function Servers() {
 
 	return (
 		<>
-			<Header
-				icon={<ServerCrashIcon />}
-			>{`Active servers | ${placeId}`}</Header>
+			<Header icon={<ServerCrashIcon />}>Active servers</Header>
 			<p className="text-sm">Click on a server instance to manage</p>
 			<div className="flex flex-col gap-5 mt-3">
 				<SearchProvider queryKey={["games-servers"]}>

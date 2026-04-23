@@ -15,7 +15,7 @@ export function NeedLogin(s: number): boolean {
 	return s === 401;
 }
 
-export const Context = createContext<AuthContext>({
+const Context = createContext<AuthContext>({
 	isLoading: true,
 	error: null,
 });
