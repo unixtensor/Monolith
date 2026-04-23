@@ -11,34 +11,30 @@ import { Link, useLocation } from "react-router";
 
 const root: string = "games";
 
-interface Routes {
+interface RouteHistory {
 	[route: string]: string;
 }
 
 export default function Navigator() {
 	const location = useLocation();
 
+	const previous_paths: RouteHistory = {};
 	const current_paths = location.pathname.split("/");
-	const current_path = current_paths[current_paths.length - 1];
+	const current_path = current_paths.filter(Boolean).pop();
 	const is_root = current_path === root;
 
 	const breadcrumb_paths = current_paths
-		.filter((s) => s !== current_path)
+		.filter((p) => p !== current_path)
 		.map((_, i) =>
 			i === 0
 				? `/${root}` //Prevent re-rendering by pointing at root instead of "/"
 				: `/${current_paths.slice(1, i + 1).join("/")}`,
 		)
 		.reverse(); //Reverse so the most-previous routes show top-first
-
-	const previous_routes: Routes = {};
-	breadcrumb_paths.forEach((v) => {
-		const r = v.split("/");
-		let r_name = r[r.length - 1];
-		if (r_name === "") {
-			r_name = root;
-		}
-		previous_routes[v] = r_name;
+	breadcrumb_paths.forEach((p) => {
+		const r_name = p.split("/").pop() as string;
+		//TODO: need to get the game name from useGames somehow instead
+		previous_paths[p] = r_name === "" ? root : r_name;
 	});
 
 	return (
@@ -55,7 +51,7 @@ export default function Navigator() {
 						<NavigationMenuContent>
 							{breadcrumb_paths.map((v, k) => (
 								<NavigationMenuLink asChild key={k}>
-									<Link to={v}>{previous_routes[v]}</Link>
+									<Link to={v}>{previous_paths[v]}</Link>
 								</NavigationMenuLink>
 							))}
 						</NavigationMenuContent>
