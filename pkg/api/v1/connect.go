@@ -10,14 +10,15 @@ import (
 )
 
 type Players = map[string]uint
-type Properties struct {
+
+type Metadata struct {
 	Name       string `json:"Name" binding:"required"`
 	CreatorId  uint   `json:"CreatorId" binding:"required"`
 	MaxPlayers uint   `json:"MaxPlayers" binding:"required"`
 }
 type Game struct {
-	Properties Properties `json:"Properties" binding:"required"`
-	Players    Players    `json:"Players" binding:"required"`
+	Game    Metadata `json:"Game" binding:"required"`
+	Players Players  `json:"Players" binding:"required"`
 }
 
 func (g *Game) insert_redis_plrs(r *redis.Client, bg_ctx context.Context, place_id string, plrs Players) error {
@@ -31,7 +32,7 @@ func (g *Game) insert_redis_plrs(r *redis.Client, bg_ctx context.Context, place_
 func (g *Game) insert_redis(r *redis.Client, bg_ctx context.Context, place_id, job_id string) error {
 	get_err := r.JSONGet(bg_ctx, place_id, "$").Err()
 	if get_err == redis.Nil {
-		if set_err := r.JSONSetMode(bg_ctx, place_id, "$", g.Properties, "NX").Err(); set_err != nil {
+		if set_err := r.JSONSetMode(bg_ctx, place_id, "$", g.Game, "NX").Err(); set_err != nil {
 			return set_err
 		}
 	} else if get_err != nil {
