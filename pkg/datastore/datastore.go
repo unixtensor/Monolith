@@ -54,6 +54,34 @@ func NewDS(s DsSettings) (*Datastore, error) {
 	return &Datastore{db, redis_open(s.Redis_addr)}, db.AutoMigrate(&PgGame{}, &PgJob{})
 }
 
+func get_db[T any](ctx context.Context, ds *Datastore, k string, db_query func(*T) error) (T, error) {
+	var r T
+	c_hit, c_err := ds.redis.Get(ctx, k).Result()
+	if errors.Is(c_err, redis.Nil) {
+		return r, db_query(&r)
+	}
+	if c_err != nil {
+		return r, c_err
+	}
+	if j_err := json.Unmarshal([]byte(c_hit), &r); j_err != nil {
+		return r, j_err
+	}
+	return r, nil
+}
+
+func get_db_marshal[T any](ctx context.Context, ds *Datastore, k string, db_query func(*T) error) (string, error) {
+	c_hit, c_err := ds.redis.Get(ctx, k).Result()
+	if errors.Is(c_err, redis.Nil) {
+		var r T
+		if err := db_query(&r); err != nil {
+			return "", err
+		}
+		j, j_err := json.Marshal(r)
+		return string(j), j_err
+	}
+	return c_hit, c_err
+}
+
 func (ds *Datastore) InsertGame(ctx context.Context, game Game) error {
 	if db_cr_err := ds.pg.Create(&PgGame{Game: game}).Error; db_cr_err != nil {
 		return db_cr_err
@@ -68,37 +96,35 @@ func (ds *Datastore) InsertJob(ctx context.Context, job Job) error {
 	return ds.redis.SetMarshel(ctx, job.JobID, job)
 }
 
-func (ds *Datastore) GetGame(ctx context.Context, placeid uint64) (Game, error) {
-	var g Game
-	c_hit, err := ds.redis.Get(ctx, strconv.Itoa(int(placeid))).Result()
-	if errors.Is(err, redis.Nil) {
-		err := ds.pg.Where("PlaceId = ?", placeid).First(&g).Error
-		return g, err
-	}
-	if j_err := json.Unmarshal([]byte(c_hit), &g); j_err != nil {
-		return g, nil
-	}
-	return g, err
+func (ds *Datastore) GetGame(ctx context.Context, placeid string) (Game, error) {
+	return get_db(ctx, ds, placeid, func(g *Game) error {
+		return ds.pg.Where("PlaceId = ?", placeid).First(g).Error
+	})
 }
 
-func (ds *Datastore) GetGameMarshal(ctx context.Context, placeid uint64) (string, error) {
-	c_hit, err := ds.redis.Get(ctx, strconv.Itoa(int(placeid))).Result()
-	if errors.Is(err, redis.Nil) {
-		var g Game
-		if err := ds.pg.Where("PlaceId = ?", placeid).First(&g).Error; err != nil {
-			return "", err
-		}
-		j, j_err := json.Marshal(g)
-		return string(j), j_err
-	}
-	return c_hit, err
+func (ds *Datastore) GetGameMarshal(ctx context.Context, placeid string) (string, error) {
+	return get_db_marshal(ctx, ds, placeid, func(g *Game) error {
+		return ds.pg.Where("PlaceId = ?", placeid).First(g).Error
+	})
 }
 
-func (ds *Datastore) DeleteGame(ctx context.Context, placeid uint64) error {
+func (ds *Datastore) GetJob(ctx context.Context, jobid string) (Job, error) {
+	return get_db(ctx, ds, jobid, func(j *Job) error {
+		return ds.pg.Where("JobId = ?", jobid).First(j).Error
+	})
+}
+
+func (ds *Datastore) GetJobMarshal(ctx context.Context, jobid string) (string, error) {
+	return get_db_marshal(ctx, ds, jobid, func(g *Game) error {
+		return ds.pg.Where("JobId = ?", jobid).First(g).Error
+	})
+}
+
+func (ds *Datastore) DeleteGame(ctx context.Context, placeid string) error {
 	if db_err := ds.pg.Where("PlaceId = ?", placeid).Delete(&Game{}).Error; db_err != nil {
 		return db_err
 	}
-	return ds.redis.Del(ctx, strconv.Itoa(int(placeid))).Err()
+	return ds.redis.Del(ctx, placeid).Err()
 }
 
 func (ds *Datastore) DeleteJob(ctx context.Context, jobid string) error {
