@@ -5,15 +5,15 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
 	v1 "github.com/unixtensor/monolith/pkg/api/v1"
+	"github.com/unixtensor/monolith/pkg/datastore"
 )
 
 type Api struct {
-	Port  string
+	Port,
 	Token string
 	Debug bool
-	Redis *redis.Client
+	DS    *datastore.Datastore
 }
 
 func (s *Api) gin() *gin.Engine {
@@ -28,7 +28,7 @@ func (s *Api) gin() *gin.Engine {
 func (s *Api) V1(bg_ctx context.Context) {
 	api_v1 := v1.V1{
 		Token: s.Token,
-		Redis: s.Redis,
+		DS:    s.DS,
 	}
 	if err := api_v1.V1(bg_ctx, s.Port, s.gin()); err != nil {
 		log.Fatalf("%s", err.Error())

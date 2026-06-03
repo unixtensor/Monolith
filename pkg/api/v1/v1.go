@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
+	"github.com/unixtensor/monolith/pkg/datastore"
 )
 
 type V1 struct {
 	Token string
-	Redis *redis.Client
+	DS    *datastore.Datastore
 }
 
 func root(ctx *gin.Context) {
