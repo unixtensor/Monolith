@@ -5,40 +5,33 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
+type Players map[string]uint64
+
 type Datastore struct {
 	pg    *gorm.DB
 	redis *Redis
 }
+
 type DsSettings struct {
 	Redis_addr, Pg_addr, Pg_port, Pg_passwd string
 }
 type Game struct {
-	PlaceId,
-	CreatorId uint64
-	Name       string
-	MaxPlayers uint
+	gorm.Model
+	PlaceId    string
+	Name       string `json:"Name" binding:"required"`
+	CreatorId  uint64 `json:"CreatorId" binding:"required"`
+	MaxPlayers uint   `json:"MaxPlayers" binding:"required"`
 }
 type Job struct {
-	JobID   string
-	Players map[string]uint64 `gorm:"-"`
-}
-type PgGame struct {
 	gorm.Model
-	Game
-}
-type PgJob struct {
-	gorm.Model
-	Job
-}
-type PgPlayer struct {
-	gorm.Model
+	JobId   string
+	PlaceId string
 }
 
 func NewDS(s DsSettings) (*Datastore, error) {
@@ -51,7 +44,7 @@ func NewDS(s DsSettings) (*Datastore, error) {
 	if db_err != nil {
 		return &Datastore{}, db_err
 	}
-	return &Datastore{db, redis_open(s.Redis_addr)}, db.AutoMigrate(&PgGame{}, &PgJob{})
+	return &Datastore{db, redis_open(s.Redis_addr)}, db.AutoMigrate(&Game{}, &Job{})
 }
 
 func get_db[T any](ctx context.Context, ds *Datastore, k string, db_query func(*T) error) (T, error) {
@@ -82,53 +75,73 @@ func get_db_marshal[T any](ctx context.Context, ds *Datastore, k string, db_quer
 	return c_hit, c_err
 }
 
-func (ds *Datastore) InsertGame(ctx context.Context, game Game) error {
-	if db_cr_err := ds.pg.Create(&PgGame{Game: game}).Error; db_cr_err != nil {
+func (ds *Datastore) InsertGameDB(ctx context.Context, game Game) error {
+	if db_cr_err := ds.pg.Create(&game).Error; db_cr_err != nil {
 		return db_cr_err
 	}
-	return ds.redis.SetMarshel(ctx, strconv.Itoa(int(game.PlaceId)), game)
+	return ds.redis.SetMarshel(ctx, game.PlaceId, game)
+}
+
+func (ds *Datastore) InsertJobDB(ctx context.Context, job Job) error {
+	if db_err := ds.pg.Create(&job).Error; db_err != nil {
+		return db_err
+	}
+	return ds.redis.SetMarshel(ctx, job.JobId, job)
+}
+
+func (ds *Datastore) InsertGame(ctx context.Context, game Game) error {
+	_, db_err := ds.GetGame(ctx, game.PlaceId)
+	if errors.Is(db_err, gorm.ErrRecordNotFound) {
+		if set_err := ds.InsertGameDB(ctx, game); set_err != nil {
+			return set_err
+		}
+	}
+	return db_err
 }
 
 func (ds *Datastore) InsertJob(ctx context.Context, job Job) error {
-	if db_err := ds.pg.Create(&PgJob{Job: job}).Error; db_err != nil {
-		return db_err
+	_, db_err := ds.GetJob(ctx, job.JobId)
+	if errors.Is(db_err, gorm.ErrRecordNotFound) {
+		if set_err := ds.InsertJobDB(ctx, job); set_err != nil {
+			return set_err
+		}
 	}
-	return ds.redis.SetMarshel(ctx, job.JobID, job)
+	return db_err
 }
 
 func (ds *Datastore) GetGame(ctx context.Context, placeid string) (Game, error) {
 	return get_db(ctx, ds, placeid, func(g *Game) error {
-		return ds.pg.Where("PlaceId = ?", placeid).First(g).Error
+		return ds.pg.Where("place_id = ?", placeid).First(g).Error
 	})
 }
 
 func (ds *Datastore) GetGameMarshal(ctx context.Context, placeid string) (string, error) {
 	return get_db_marshal(ctx, ds, placeid, func(g *Game) error {
-		return ds.pg.Where("PlaceId = ?", placeid).First(g).Error
+		return ds.pg.Where("place_id = ?", placeid).First(g).Error
 	})
 }
 
 func (ds *Datastore) GetJob(ctx context.Context, jobid string) (Job, error) {
 	return get_db(ctx, ds, jobid, func(j *Job) error {
-		return ds.pg.Where("JobId = ?", jobid).First(j).Error
+		return ds.pg.Where("job_id = ?", jobid).First(j).Error
 	})
 }
 
 func (ds *Datastore) GetJobMarshal(ctx context.Context, jobid string) (string, error) {
 	return get_db_marshal(ctx, ds, jobid, func(g *Game) error {
-		return ds.pg.Where("JobId = ?", jobid).First(g).Error
+		return ds.pg.Where("job_id = ?", jobid).First(g).Error
 	})
 }
 
 func (ds *Datastore) DeleteGame(ctx context.Context, placeid string) error {
-	if db_err := ds.pg.Where("PlaceId = ?", placeid).Delete(&Game{}).Error; db_err != nil {
+	if db_err := ds.pg.Where("place_id = ?", placeid).Delete(&Game{}).Error; db_err != nil {
 		return db_err
 	}
 	return ds.redis.Del(ctx, placeid).Err()
 }
 
 func (ds *Datastore) DeleteJob(ctx context.Context, jobid string) error {
-	if db_err := ds.pg.Unscoped().Where("JobID = ?", jobid).Delete(&Job{}).Error; db_err != nil {
+	if db_err := ds.pg.Unscoped().Where("job_id = ?", jobid).Delete(&Job{}).Error; db_err != nil {
 		return db_err
 	}
 	return ds.redis.Del(ctx, jobid).Err()

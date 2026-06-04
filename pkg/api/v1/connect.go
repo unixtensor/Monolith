@@ -2,55 +2,49 @@ package v1
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/unixtensor/monolith/pkg/datastore"
 )
 
-type Metadata struct {
-	Name       string `json:"Name" binding:"required"`
-	CreatorId  uint   `json:"CreatorId" binding:"required"`
-	MaxPlayers uint   `json:"MaxPlayers" binding:"required"`
-}
-type Game struct {
-	Game    Metadata        `json:"Game" binding:"required"`
-	Players map[string]uint `json:"Players" binding:"required"`
+func add_game(v1 *V1, bg_ctx context.Context, gin_ctx *gin.Context, placeid, jobid string) error {
+	g := datastore.Game{PlaceId: placeid}
+	j := datastore.Job{
+		JobId:   jobid,
+		PlaceId: placeid,
+	}
+	if game_json_err := gin_ctx.ShouldBindJSON(&g); game_json_err != nil {
+		return game_json_err
+	}
+	if db_set_g_err := v1.DS.InsertGame(bg_ctx, g); db_set_g_err != nil {
+		return db_set_g_err
+	}
+	return v1.DS.InsertJob(bg_ctx, j)
 }
 
 func (v1 *V1) connect(bg_ctx context.Context) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		place_id := ctx.Param("placeId")
-		job_id := ctx.Param("jobId")
+	return func(gin_ctx *gin.Context) {
+		placeid := gin_ctx.Param("placeId")
+		jobid := gin_ctx.Param("jobId")
 
-		var g = Game{}
-		if game_err := ctx.ShouldBindJSON(&g); game_err != nil {
-			InternalError(ctx, game_err)
+		if err := add_game(v1, bg_ctx, gin_ctx, placeid, jobid); err != nil {
+			InternalError(gin_ctx, err)
 			return
 		}
-		if _, db_err := v1.DS.GetGame(bg_ctx, place_id); db_err != nil {
-			InternalError(ctx, db_err)
-			return
-		}
-		ctx.Status(http.StatusOK)
+		gin_ctx.Status(http.StatusOK)
 	}
 }
 
 func (v1 *V1) connected(bg_ctx context.Context) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		place_id := ctx.Param("placeId")
+	return func(gin_ctx *gin.Context) {
+		placeid := gin_ctx.Param("placeId")
 
-		exists, err := v1.Redis.JSONGet(bg_ctx, place_id, "$").Result()
-		println(exists)
+		j, err := v1.DS.GetGameMarshal(bg_ctx, placeid)
 		if err != nil {
-			InternalError(ctx, err)
+			InternalError(gin_ctx, err)
 			return
 		}
-		var as_json []json.RawMessage
-		if err := json.Unmarshal([]byte(exists), &as_json); err != nil {
-			InternalError(ctx, err)
-			return
-		}
-		ctx.JSON(http.StatusOK, as_json)
+		gin_ctx.JSON(http.StatusOK, j)
 	}
 }

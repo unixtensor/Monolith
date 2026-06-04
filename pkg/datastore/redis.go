@@ -17,9 +17,7 @@ type Redis struct {
 }
 
 func redis_open(addr string) *Redis {
-	r := redis.NewClient(&redis.Options{Addr: addr})
-	defer r.Close()
-	return &Redis{r}
+	return &Redis{redis.NewClient(&redis.Options{Addr: addr})}
 }
 
 func (r *Redis) SetMarshel(ctx context.Context, key string, v any) error {
