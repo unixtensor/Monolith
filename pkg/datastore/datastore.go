@@ -11,8 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type Players map[string]uint64
-
 type Datastore struct {
 	pg    *gorm.DB
 	redis *Redis
@@ -30,8 +28,7 @@ type Game struct {
 }
 type Job struct {
 	gorm.Model
-	JobId   string
-	PlaceId string
+	JobId, PlaceId string
 }
 
 func NewDS(s DsSettings) (*Datastore, error) {
@@ -47,7 +44,7 @@ func NewDS(s DsSettings) (*Datastore, error) {
 	return &Datastore{db, redis_open(s.Redis_addr)}, db.AutoMigrate(&Game{}, &Job{})
 }
 
-func get_db[T any](ctx context.Context, ds *Datastore, k string, db_query func(*T) error) (T, error) {
+func get_db[T Game | Job](ctx context.Context, ds *Datastore, k string, db_query func(*T) error) (T, error) {
 	var r T
 	c_hit, c_err := ds.redis.Get(ctx, k).Result()
 	if errors.Is(c_err, redis.Nil) {
@@ -62,7 +59,7 @@ func get_db[T any](ctx context.Context, ds *Datastore, k string, db_query func(*
 	return r, nil
 }
 
-func get_db_marshal[T any](ctx context.Context, ds *Datastore, k string, db_query func(*T) error) (string, error) {
+func get_db_marshal[T Game | Job](ctx context.Context, ds *Datastore, k string, db_query func(*T) error) (string, error) {
 	c_hit, c_err := ds.redis.Get(ctx, k).Result()
 	if errors.Is(c_err, redis.Nil) {
 		var r T
@@ -92,9 +89,7 @@ func (ds *Datastore) InsertJobDB(ctx context.Context, job Job) error {
 func (ds *Datastore) InsertGame(ctx context.Context, game Game) error {
 	_, db_err := ds.GetGame(ctx, game.PlaceId)
 	if errors.Is(db_err, gorm.ErrRecordNotFound) {
-		if set_err := ds.InsertGameDB(ctx, game); set_err != nil {
-			return set_err
-		}
+		return ds.InsertGameDB(ctx, game)
 	}
 	return db_err
 }
@@ -102,9 +97,7 @@ func (ds *Datastore) InsertGame(ctx context.Context, game Game) error {
 func (ds *Datastore) InsertJob(ctx context.Context, job Job) error {
 	_, db_err := ds.GetJob(ctx, job.JobId)
 	if errors.Is(db_err, gorm.ErrRecordNotFound) {
-		if set_err := ds.InsertJobDB(ctx, job); set_err != nil {
-			return set_err
-		}
+		return ds.InsertJobDB(ctx, job)
 	}
 	return db_err
 }
