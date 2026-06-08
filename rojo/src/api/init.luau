@@ -1,7 +1,10 @@
 --!strict
 
 local Http = require(script.http)
-local RS = game:GetService("RunService")
+
+local HttpService = game:GetService('HttpService')
+local Players = game:GetService('Players')
+local RS = game:GetService('RunService')
 
 local Api = {} :: Constructor
 Api.__index = Api
@@ -18,7 +21,7 @@ type Constructor = {
 export type Api = setmetatable<{ http: Http.Http }, typeof(Api)>
 
 local placeid: number = game.PlaceId
-local jobid: string = RS:IsStudio() and "studio" or game.JobId
+local jobid: string = RS:IsStudio() and `studio-{HttpService:GenerateGUID(false)}` or game.JobId
 
 function Api.new(address, token, compression)
 	return setmetatable({
@@ -35,6 +38,9 @@ function Api:Connect()
 	local r_ok, _r = self.http:PostAsync(`/{placeid}/{jobid}`, {
 		Name = game.Name;
 		CreatorId = game.CreatorId;
+		MaxPlayers = Players.MaxPlayers;
+		Players = #Players:GetPlayers();
+		UpTime = workspace.DistributedGameTime;
 	})
 	return r_ok
 end

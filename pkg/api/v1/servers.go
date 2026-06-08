@@ -1,16 +1,19 @@
 package v1
 
 import (
-	"net/http"
+	"context"
 
 	"github.com/gin-gonic/gin"
-	game "github.com/unixtensor/monolith/pkg/games"
 )
 
-func Servers(ctx *gin.Context) {
-	keys := make([]string, 0, len(game.Games))
-	for key := range game.Games {
-		keys = append(keys, key)
+func (v1 *V1) games(bg_ctx context.Context) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
 	}
-	ctx.JSON(http.StatusOK, keys)
+}
+
+func (v1 *V1) servers(bg_ctx context.Context) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+	}
 }

@@ -12,7 +12,7 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
-		<ThemeProvider defaultTheme="dark" storageKey="monolith-ui-theme">
+		<ThemeProvider defaultTheme="dark">
 			<QueryClientProvider client={queryClient}>
 				<AuthProvider>
 					<BrowserRouter>

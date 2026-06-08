@@ -1,5 +1,5 @@
+import api from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { createContext, useContext } from "react";
 
 export interface AuthContext {
@@ -14,14 +14,18 @@ export function LoggedIn(s: number): boolean {
 export function NeedLogin(s: number): boolean {
 	return s === 401;
 }
-export const Context = createContext<AuthContext>({
+
+const Context = createContext<AuthContext>({
 	isLoading: true,
 	error: null,
 });
 
-export function useAuth() {
-	return useContext(Context);
-}
+export const useAuth = () => {
+	const context = useContext(Context);
+	if (context === undefined)
+		throw new Error("useAuth must be used within a AuthProvider");
+	return context;
+};
 
 export default function AuthProvider({
 	children,
@@ -31,8 +35,8 @@ export default function AuthProvider({
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["auth"],
 		queryFn: () =>
-			axios
-				.get("/api/v1", {
+			api
+				.get<number>("", {
 					validateStatus: (s) => NeedLogin(s) || LoggedIn(s),
 				})
 				.then((r) => NeedLogin(r.status)),

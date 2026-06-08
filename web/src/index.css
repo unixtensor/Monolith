@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+/*@import "@fontsource-variable/geist";*/
 
 @custom-variant dark (&:is(.dark *));
 
@@ -183,14 +183,6 @@ button:not(:disabled),
 	--shadow-lg: var(--shadow-lg);
 	--shadow-xl: var(--shadow-xl);
 	--shadow-2xl: var(--shadow-2xl);
-}
-
-@layer utilities {
-	.animate-spin-pulse {
-		animation:
-			spin 1s linear infinite,
-			pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-	}
 }
 
 @layer base {

@@ -31,3 +31,5 @@ rojo.rbxlx
 *.rbxl.lock
 
 sourcemap.json
+
+.env
