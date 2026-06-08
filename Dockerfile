@@ -11,8 +11,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/monolith
 
 FROM alpine:latest
 
-COPY --from=builder /build/server /
+COPY --from=builder /build/server /usr/bin
 
 EXPOSE 3000
 
-CMD ["/server"]
+CMD ["server"]
