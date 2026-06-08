@@ -40,7 +40,7 @@ func (v1 *V1) connected(bg_ctx context.Context) gin.HandlerFunc {
 	return func(gin_ctx *gin.Context) {
 		placeid := gin_ctx.Param("placeId")
 
-		j, err := v1.DS.GetGameMarshal(bg_ctx, placeid)
+		j, err := v1.DS.GetGame(bg_ctx, placeid)
 		if err != nil {
 			InternalError(gin_ctx, err)
 			return
