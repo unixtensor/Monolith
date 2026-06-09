@@ -32,8 +32,7 @@ func (v1 *V1) verify_token() gin.HandlerFunc {
 			ctx.Next()
 			return
 		}
-		token_key := ctx.GetHeader("X-API-Key")
-		if token_key != v1.Token {
+		if token_key := ctx.GetHeader("X-API-Key"); token_key != v1.Token {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
