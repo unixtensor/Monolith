@@ -127,15 +127,15 @@ func (ds *Datastore) GetJobMarshal(ctx context.Context, jobid string) (string, e
 }
 
 func (ds *Datastore) DeleteGame(ctx context.Context, placeid string) error {
-	if db_err := ds.pg.Where("place_id = ?", placeid).Delete(&Game{}).Error; db_err != nil {
-		return db_err
+	if c_err := ds.redis.Del(ctx, placeid).Err(); c_err != nil {
+		return c_err
 	}
-	return ds.redis.Del(ctx, placeid).Err()
+	return ds.pg.Where("place_id = ?", placeid).Delete(&Game{}).Error
 }
 
 func (ds *Datastore) DeleteJob(ctx context.Context, jobid string) error {
-	if db_err := ds.pg.Unscoped().Where("job_id = ?", jobid).Delete(&Job{}).Error; db_err != nil {
-		return db_err
+	if c_err := ds.redis.Del(ctx, jobid).Err(); c_err != nil {
+		return c_err
 	}
-	return ds.redis.Del(ctx, jobid).Err()
+	return ds.pg.Unscoped().Where("job_id = ?", jobid).Delete(&Job{}).Error
 }
