@@ -13,8 +13,8 @@ type V1 struct {
 	DS    *datastore.Datastore
 }
 
-func InternalError(ctx *gin.Context, err error) {
-	ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+func InternalError(gin_ctx *gin.Context, err error) {
+	gin_ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 }
 
 func (v1 *V1) V1(bg_ctx context.Context, port string, gin *gin.Engine) error {
@@ -39,7 +39,7 @@ func (v1 *V1) V1(bg_ctx context.Context, port string, gin *gin.Engine) error {
 				api_v1_group.PUT(":placeId/:jobId/players", v1.insert_players(bg_ctx))
 			}
 			{ //AUTH DELETE
-				api_v1_group.DELETE(":placeId", v1.disconnect_game(bg_ctx))
+				// api_v1_group.DELETE(":placeId", v1.disconnect_game(bg_ctx))
 				api_v1_group.DELETE(":placeId/:jobId/", v1.disconnect_job(bg_ctx))
 				api_v1_group.DELETE(":placeId/:jobId/players", v1.delete_players(bg_ctx))
 			}
