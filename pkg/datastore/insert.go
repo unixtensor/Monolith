@@ -10,9 +10,12 @@ import (
 	"gorm.io/gorm"
 )
 
-const TTL_INSERTS = time.Hour
+const (
+	TTL_INSERTS = time.Hour
+	GAME_KEY    = "game:"
+)
 
-func set_marshel_cache(ctx context.Context, r *redis.Client, key string, v any) error {
+func set_cache_marshel(ctx context.Context, r *redis.Client, key string, v any) error {
 	j, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -24,14 +27,14 @@ func (ds *Datastore) InsertGameDB(ctx context.Context, game Game) error {
 	if db_cr_err := ds.pg.Create(&game).Error; db_cr_err != nil {
 		return db_cr_err
 	}
-	return set_marshel_cache(ctx, ds.redis, game.PlaceId, game)
+	return set_cache_marshel(ctx, ds.redis, GAME_KEY+game.PlaceId, game)
 }
 
 func (ds *Datastore) InsertJobDB(ctx context.Context, job Job) error {
 	if db_err := ds.pg.Create(&job).Error; db_err != nil {
 		return db_err
 	}
-	return set_marshel_cache(ctx, ds.redis, job.JobId, job)
+	return set_cache_marshel(ctx, ds.redis, job.PlaceId+":"+job.JobId, job)
 }
 
 func (ds *Datastore) InsertGame(ctx context.Context, game Game) error {
