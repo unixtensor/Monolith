@@ -32,6 +32,7 @@ func (v1 *V1) insert_players(ctx context.Context) gin.HandlerFunc {
 		}
 		if err := v1.DS.InsertPlayers(ctx, jobid, players); err != nil {
 			InternalError(gin_ctx, err)
+			return
 		}
 		gin_ctx.Status(http.StatusOK)
 	}
@@ -48,6 +49,7 @@ func (v1 *V1) delete_players(ctx context.Context) gin.HandlerFunc {
 		}
 		if err := v1.DS.DeletePlayers(ctx, jobid, players); err != nil {
 			InternalError(gin_ctx, err)
+			return
 		}
 		gin_ctx.Status(http.StatusOK)
 	}
