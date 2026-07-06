@@ -6,51 +6,41 @@ local HttpService = game:GetService('HttpService')
 local Players = game:GetService('Players')
 local RS = game:GetService('RunService')
 
-local Api = {} :: Constructor
+local Api = {}
 Api.__index = Api
 
 type ResponseOk = boolean
-type Constructor = {
-	__index: Constructor;
-	new: (address: string, token: string, compression: boolean) -> Api;
-	Connected: (self: Api) -> (ResponseOk, boolean);
-	Connect: (self: Api) -> ResponseOk;
-	Disconnect: (self: Api) -> ResponseOk;
-	UploadInstance: (self: Api, Http.Json?) -> ResponseOk;
-}
 export type Api = setmetatable<{ http: Http.Http }, typeof(Api)>
 
 local placeid: number = game.PlaceId
 local jobid: string = RS:IsStudio() and `studio-{HttpService:GenerateGUID(false)}` or game.JobId
 
-function Api.new(address, token, compression)
+function Api.new(address: string, token: string): Api
 	return setmetatable({
-		http = Http.new(address, token, compression)
+		http = Http.new(address, token)
 	}, Api)
 end
 
-function Api:Connected()
+function Api:Connected(): (ResponseOk, boolean)
 	local r_ok, r = self.http:GetAsync(`/{placeid}`)
-	return r_ok, r.Body :: boolean
+	return r_ok, r
 end
 
-function Api:Connect()
+function Api:Connect(): ResponseOk
 	local r_ok, _r = self.http:PostAsync(`/{placeid}/{jobid}`, {
 		Name = game.Name;
 		CreatorId = game.CreatorId;
 		MaxPlayers = Players.MaxPlayers;
-		Players = #Players:GetPlayers();
-		UpTime = workspace.DistributedGameTime;
 	})
 	return r_ok
 end
 
-function Api:Disconnect()
+function Api:Disconnect(): ResponseOk
 	local r_ok, _r = self.http:PostAsync(`/{placeid}/{jobid}/disconnect`)
 	return r_ok
 end
 
-function Api:UploadInstance(GameInstance)
+function Api:UploadInstance(GameInstance: Http.Json?): ResponseOk
 	local r_ok, _r = self.http:PostAsync(`/{placeid}/{jobid}/instance`, GameInstance)
 	return r_ok
 end
