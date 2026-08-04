@@ -53,7 +53,7 @@ const function request(self: Http, method: HttpMethod, req: string, body: Json?)
 	} :: Json)
 end
 
-const function http_async(self: Http, method: HttpMethod, req: string, body: Json?): HttpResponseData?
+const function http_async(self: Http, method: HttpMethod, req: string, body: Json?): HttpResponseData
 	const r_ok, r = request(self, method, req, body)
 	if not r_ok then
 		http_delay = math.max(http_delay + 2, 30)
@@ -86,34 +86,22 @@ end
 
 function Http:PostAsync(req, body)
 	const r = http_async(self, "POST", req)
-	if r then
-		return response_middleware(r, req, body)
-	end
-	return false, {} :: HttpResponseData
+	return response_middleware(r, req, body)
 end
 
 function Http:PutAsync(req, body)
 	const r = http_async(self, "PUT", req)
-	if r then
-		return response_middleware(r, req, body)
-	end
-	return false, {} :: HttpResponseData
+	return response_middleware(r, req, body)
 end
 
 function Http:GetAsync(req)
 	const r = http_async(self, "GET", req)
-	if r then
-		return response_middleware(r, req)
-	end
-	return false, {} :: HttpResponseData
+	return response_middleware(r, req)
 end
 
 function Http:DeleteAsync(req)
 	const r = http_async(self, "DELETE", req)
-	if r then
-		return response_middleware(r, req)
-	end
-	return false, {} :: HttpResponseData
+	return response_middleware(r, req)
 end
 
 return Http
