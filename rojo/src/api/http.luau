@@ -42,15 +42,18 @@ const api_root:   "/api/v1" = "/api/v1"
 local http_delay: number = 0
 
 const function request(self: Http, method: HttpMethod, req: string, body: Json?): (boolean, HttpResponseData)
-	return pcall(HttpService.RequestAsync, HttpService, {
+	const rest: Json = {
 		Url = self.address .. api_root .. req;
 		Method = method;
 		Headers = {
 			["Content-Type"] = "application/json";
 			["X-API-Key"] = self.token;
-		},
-		Body = HttpService:JSONEncode(body or {});
-	} :: Json)
+		}
+	}
+	if body then
+		rest.Body = HttpService:JSONEncode(body or {})
+	end
+	return pcall(HttpService.RequestAsync, HttpService, rest)
 end
 
 const function http_async(self: Http, method: HttpMethod, req: string, body: Json?): HttpResponseData
