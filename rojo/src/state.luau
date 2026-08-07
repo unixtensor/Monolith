@@ -1,6 +1,6 @@
 --!strict
 
-const Api = require(script.Parent.api)
+const Api = require("@self/api")
 
 const Players = game:GetService("Players")
 

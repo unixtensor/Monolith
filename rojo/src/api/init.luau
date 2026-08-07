@@ -1,6 +1,6 @@
 --!strict
 
-const Http = require(script.http)
+const Http = require("@self/http")
 
 const HttpService = game:GetService('HttpService')
 const Players = game:GetService('Players')

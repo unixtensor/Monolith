@@ -1,8 +1,8 @@
 --!strict
 
-const State = require(script.state)
-const Http = require(script.api.http)
-const Api = require(script.api)
+const State = require("@self/state")
+const Http = require("@self/api/http")
+const Api = require("@self/api")
 
 const Monolith = {} :: Constructor
 Monolith.__index = Monolith
