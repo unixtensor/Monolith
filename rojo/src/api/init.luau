@@ -11,6 +11,7 @@ Api.__index = Api
 
 type Constructor = {
 	__index: Constructor;
+
 	new: (address: string, token: string, http_options: Http.HttpOptions) -> Api;
 	Connected: (self: Api) -> (boolean, Http.Json);
 	Connect: (self: Api) -> boolean;

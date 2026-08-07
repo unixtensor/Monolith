@@ -13,18 +13,18 @@ export type HttpOptions = {
 type Constructor = {
 	__index: Constructor;
 	Enabled: boolean;
+
 	new: (address: string, token: string, options: HttpOptions) -> Http;
 	PostAsync: (self: Http, req: string, body: Json?) -> (boolean, HttpResponseData);
 	PutAsync: (self: Http, req: string, body: Json?) -> (boolean, HttpResponseData);
 	GetAsync: (self: Http, req: string) -> (boolean, HttpResponseData);
 	DeleteAsync: (self: Http, req: string, body: Json?) -> (boolean, HttpResponseData)
 }
-type Self = {
+export type Http = setmetatable<{
 	address: string;
 	token: string;
 	options: HttpOptions;
-}
-export type Http = setmetatable<Self, typeof(Http)>
+}, typeof(Http)>
 
 type HttpMethod = "POST" | "PUT" | "GET" | "DELETE"
 export type Json = any
