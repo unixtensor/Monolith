@@ -1,15 +1,35 @@
 --!strict
 
-local HttpService = game:GetService("HttpService")
+const HttpService = game:GetService("HttpService")
 
-local Http = {} :: Constructor
+const Http = {} :: Constructor
 Http.__index = Http
-Http.__bypassInsecure = false
-Http.Insecure = Http.__bypassInsecure
 Http.Enabled = HttpService.HttpEnabled
 
-export type HttpResponseData<T = string?> = {
-    Body: T,
+export type HttpOptions = {
+	log: boolean;
+	retries: number;
+}
+type Constructor = {
+	__index: Constructor;
+	Enabled: boolean;
+
+	new: (address: string, token: string, options: HttpOptions) -> Http;
+	PostAsync: (self: Http, req: string, body: Json?) -> (boolean, HttpResponseData);
+	PutAsync: (self: Http, req: string, body: Json?) -> (boolean, HttpResponseData);
+	GetAsync: (self: Http, req: string) -> (boolean, HttpResponseData);
+	DeleteAsync: (self: Http, req: string, body: Json?) -> (boolean, HttpResponseData)
+}
+export type Http = setmetatable<{
+	address: string;
+	token: string;
+	options: HttpOptions;
+}, typeof(Http)>
+
+type HttpMethod = "POST" | "PUT" | "GET" | "DELETE"
+export type Json = any
+export type HttpResponseData = {
+    Body: Json,
     Headers: {
         [string]: string
     },
@@ -17,54 +37,51 @@ export type HttpResponseData<T = string?> = {
     StatusMessage: string,
     Success: boolean
 }
-export type Json<K = string, V = any> = {
-	[K]: V;
-}
 type RestDetails = {
-	method: "POST" | "GET";
+	method: HttpMethod;
 	request: string;
 	body: string?;
 }
 
-type Constructor = {
-	__index: Constructor;
-	__bypassInsecure: boolean;
-	Enabled: boolean;
-	Insecure: boolean;
-	ValidAddress: (address: string) -> string?;
-	new: (address: string, token: string, compression: boolean) -> Http;
-	PostAsync: <T>(self: Http, req: string, body: Json?) -> (boolean, HttpResponseData<T>);
-	GetAsync: <T>(self: Http, req: string) -> (boolean, HttpResponseData<T>);
-}
-type Self = {
-	address: string;
-	token: string;
-	compression: boolean?;
-}
-export type Http = setmetatable<Self, typeof(Http)>
+const api_root:  "/api/v1" = "/api/v1"
+local http_delay:   number = 0
+local http_retries: number = 0
 
-local api_root: "/api/v1" = "/api/v1"
-
-local function rest_builder(self: Http, rest: RestDetails): Json
-	local payload = {
-		Url = self.address .. api_root .. rest.request;
-		Method = rest.method;
+const function request(self: Http, method: HttpMethod, req: string, body: Json?): (boolean, HttpResponseData)
+	const rest: Json = {
+		Url = self.address .. api_root .. req;
+		Method = method;
 		Headers = {
 			["Content-Type"] = "application/json";
 			["X-API-Key"] = self.token;
-		},
-		Body = rest.body;
+		}
 	}
-	if self.compression then
-		payload.Headers["Content-Encoding"] = "gzip"
-		payload.Compress = Enum.HttpCompression.Gzip
+	if body then
+		rest.Body = HttpService:JSONEncode(body)
 	end
-	return payload
+	return pcall(HttpService.RequestAsync, HttpService, rest)
 end
 
-local function response_middleware<T>(res: HttpResponseData, req: string, body: Json?): (boolean, HttpResponseData<T>)
+const function http(self: Http, method: HttpMethod, req: string, body: Json?): (boolean, HttpResponseData)
+	if self.options.log then
+		print(`[{method}]`, "|", req, "|", body)
+	end
+
+	const r_ok, r = request(self, method, req, body)
+	if not r_ok and http_retries < self.options.retries then
+		http_retries += 1
+		http_delay = math.min(http_delay + 2, 30)
+		task.wait(http_delay)
+		return http(self, method, req)
+	end
+
+	http_delay, http_retries = 0, 0
+	return r_ok, r
+end
+
+const function response_middleware(res: HttpResponseData, req: string, body: Json?): (boolean, HttpResponseData)
 	if res.Success and res.Body then
-		local ok, d = pcall(HttpService.JSONDecode, HttpService, res.Body)
+		const ok, d = pcall(HttpService.JSONDecode, HttpService, res.Body)
 		if ok then
 			res.Body = d
 		end
@@ -75,61 +92,44 @@ local function response_middleware<T>(res: HttpResponseData, req: string, body: 
 	return res.Success, res
 end
 
-local function local_address(host: string): string?
-	return host:match("^localhost")
-		or host:match("^0%.0%.0%.0$")
-		or host:match("^192%.168%.")
-		or host:match("^10%.")
-		or host:match("^127%.")
-		or host:match("^172%.%d+%.")
-end
-
-function Http.ValidAddress(address)
-	local http_compliant = address:match("^https?://")
-	if http_compliant then
-		local domain = address:match("https?://([^/]+)")
-		if not domain then
-			return nil
-		end
-		if not local_address(domain) and http_compliant == "http://" then
-			Http.Insecure = true
-		end
-		--Trim trailing slash
-		return (address:gsub("/+$", ""))
-	end
-	return nil
-end
-
-function Http.new(address, token, compression)
-	if Http.Insecure then
-		if not Http.__bypassInsecure then
-			error("An insecure address is being used.  STOPPING", 0)
-		end
-		warn("Monolith has been forcefully connected using a public insecure address.  You're open to man-in-the-middle attacks!")
-	end
-
-	local self = {}
+function Http.new(address, token, options)
+	const self = {}
 	self.address = address
 	self.token = token
-	self.compression = compression
+	self.options = options
 	return setmetatable(self, Http)
 end
 
 function Http:PostAsync(req, body)
-	local r = HttpService:RequestAsync(rest_builder(self, {
-		method = "POST";
-		request = req;
-		body = HttpService:JSONEncode(body or {});
-	}))
-	return response_middleware(r, req, body)
+	const r_ok, r = http(self, "POST", req)
+	if r_ok then
+		return response_middleware(r, req, body)
+	end
+	return r_ok, r
+end
+
+function Http:PutAsync(req, body)
+	const r_ok, r = http(self, "PUT", req)
+	if r_ok then
+		return response_middleware(r, req, body)
+	end
+	return r_ok, r
 end
 
 function Http:GetAsync(req)
-	local r = HttpService:RequestAsync(rest_builder(self, {
-		method = "GET";
-		request = req;
-	}))
-	return response_middleware(r, req)
+	const r_ok, r = http(self, "GET", req)
+	if r_ok then
+		return response_middleware(r, req)
+	end
+	return r_ok, r
+end
+
+function Http:DeleteAsync(req)
+	const r_ok, r = http(self, "DELETE", req)
+	if r_ok then
+		return response_middleware(r, req)
+	end
+	return r_ok, r
 end
 
 return Http

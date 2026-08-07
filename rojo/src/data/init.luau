@@ -8,12 +8,12 @@ Data.__index = Data
 type Constructor = {
 	__index: Constructor;
 	new: () -> Data;
-	Game: (self: Data) -> GameInstance.GameInstancePayload
+	Game: (self: Data) -> GameInstance.GameInstancePayload;
+
 }
-type Self = {
+export type Data = setmetatable<{
 	GameInstance: GameInstance.GameInstance
-}
-export type Data = setmetatable<Self, typeof(Data)>
+}, typeof(Data)>
 
 function Data.new()
 	local self = {}
