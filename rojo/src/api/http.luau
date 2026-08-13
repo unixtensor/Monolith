@@ -68,7 +68,9 @@ const function http(self: Http, method: HttpMethod, req: string, body: Json?): (
 	end
 
 	const r_ok, r = request(self, method, req, body)
-	if not r_ok and http_retries < self.options.retries then
+	if not r_ok
+	and r.StatusCode --Check if were not "HttpError: ConnectFail"
+	and http_retries < self.options.retries then
 		http_retries += 1
 		http_delay = math.min(http_delay + 2, 30)
 		task.wait(http_delay)
