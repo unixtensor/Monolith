@@ -11,13 +11,14 @@ import (
 )
 
 type ConnectedGame struct {
-	datastore.Game
-	jobs []string
+	Properties datastore.GameProperties
+	Creator    datastore.GameCreatorDetails
+	jobs       []string
 }
 
 func add_game(v1 *V1, bg_ctx context.Context, gin_ctx *gin.Context, placeid, jobid string) error {
 	g := datastore.Game{
-		Properties: datastore.GameDetails{PlaceId: placeid},
+		Properties: datastore.GameProperties{PlaceId: placeid},
 	}
 	j := datastore.Job{
 		JobId:   jobid,
