@@ -2,10 +2,12 @@ package v1
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/unixtensor/monolith/pkg/datastore"
+	"gorm.io/gorm"
 )
 
 func add_game(v1 *V1, bg_ctx context.Context, gin_ctx *gin.Context, placeid, jobid string) error {
@@ -44,6 +46,10 @@ func (v1 *V1) connected(bg_ctx context.Context) gin.HandlerFunc {
 
 		j, err := v1.DS.GetGame(bg_ctx, placeid)
 		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				gin_ctx.JSON(http.StatusOK, nil)
+				return
+			}
 			InternalError(gin_ctx, err)
 			return
 		}
