@@ -39,13 +39,13 @@ func get_db_marshal[T Game | Job](ctx context.Context, redis_c *redis.Client, k 
 
 func (ds *Datastore) GetGame(ctx context.Context, placeid string) (Game, error) {
 	return get_db(ctx, ds.redis, GAME_KEY+placeid, func(g *Game) error {
-		return ds.pg.Where("place_id = ?", placeid).First(g).Error
+		return ds.pg.Where("game_place_id = ?", placeid).First(g).Error
 	})
 }
 
 func (ds *Datastore) GetGameMarshal(ctx context.Context, placeid string) (string, error) {
 	return get_db_marshal(ctx, ds.redis, GAME_KEY+placeid, func(g *Game) error {
-		return ds.pg.Where("place_id = ?", placeid).First(g).Error
+		return ds.pg.Where("game_place_id = ?", placeid).First(g).Error
 	})
 }
 
@@ -68,7 +68,7 @@ func (ds *Datastore) GetJobMarshal(ctx context.Context, jobid string) (string, e
 
 func (ds *Datastore) GetJobs(ctx context.Context, placeid string) ([]Job, error) {
 	var jobs []Job
-	return jobs, ds.pg.Where("place_id = ?", placeid).Find(&jobs).Error
+	return jobs, ds.pg.Where("game_place_id = ?", placeid).Find(&jobs).Error
 }
 
 func (ds *Datastore) GetPlayers(ctx context.Context, jobid string) (Players, error) {

@@ -6,7 +6,7 @@ func (ds *Datastore) DeleteGame(ctx context.Context, placeid string) error {
 	if c_err := ds.redis.Del(ctx, placeid).Err(); c_err != nil {
 		return c_err
 	}
-	return ds.pg.Where("place_id = ?", placeid).Delete(&Game{}).Error
+	return ds.pg.Where("game_place_id = ?", placeid).Delete(&Game{}).Error
 }
 
 func (ds *Datastore) DeleteJob(ctx context.Context, jobid string) error {
