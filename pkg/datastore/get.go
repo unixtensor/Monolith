@@ -68,7 +68,7 @@ func (ds *Datastore) GetJobMarshal(ctx context.Context, jobid string) (string, e
 
 func (ds *Datastore) GetJobs(ctx context.Context, placeid string) ([]Job, error) {
 	var jobs []Job
-	return jobs, ds.pg.Where("game_place_id = ?", placeid).Find(&jobs).Error
+	return jobs, ds.pg.Where("place_id = ?", placeid).Find(&jobs).Error
 }
 
 func (ds *Datastore) GetPlayers(ctx context.Context, jobid string) (Players, error) {
