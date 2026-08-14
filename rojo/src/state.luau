@@ -27,6 +27,12 @@ const function players(self: State)
 	end)
 end
 
+const function closing(self: State)
+	game:BindToClose(function()
+		self.api:Disconnect()
+	end)
+end
+
 function State.new(api)
 	return setmetatable({
 		api = api
@@ -34,16 +40,9 @@ function State.new(api)
 end
 
 function State:Connect()
-	const connected_ok, connected = self.api:Connected()
-	if not connected_ok then
-		return connected_ok
-	end
-	if connected then
-		return connected
-	end
-
 	const connect_ok = self.api:Connect()
 	if connect_ok then
+		closing(self)
 		players(self)
 	end
 	return connect_ok

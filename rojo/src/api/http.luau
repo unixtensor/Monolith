@@ -15,10 +15,10 @@ type Constructor = {
 	Enabled: boolean;
 
 	new: (address: string, token: string, options: HttpOptions) -> Http;
-	PostAsync: (self: Http, req: string, body: Json?) -> (boolean, HttpResponseData);
-	PutAsync: (self: Http, req: string, body: Json?) -> (boolean, HttpResponseData);
-	GetAsync: (self: Http, req: string) -> (boolean, HttpResponseData);
-	DeleteAsync: (self: Http, req: string, body: Json?) -> (boolean, HttpResponseData)
+	PostAsync: (self: Http, req: string, body: Json?, guarantee: boolean?) -> (boolean, HttpResponseData);
+	PutAsync: (self: Http, req: string, body: Json?, guarantee: boolean?) -> (boolean, HttpResponseData);
+	GetAsync: (self: Http, req: string, guarantee: boolean?) -> (boolean, HttpResponseData);
+	DeleteAsync: (self: Http, req: string, body: Json?, guarantee: boolean?) -> (boolean, HttpResponseData)
 }
 export type Http = setmetatable<{
 	address: string;
@@ -62,17 +62,24 @@ const function request(self: Http, method: HttpMethod, req: string, body: Json?)
 	return pcall(HttpService.RequestAsync, HttpService, rest)
 end
 
-const function http(self: Http, method: HttpMethod, req: string, body: Json?): (boolean, HttpResponseData)
+const function http(self: Http, method: HttpMethod, req: string, body: Json?, guarantee: boolean?): (boolean, HttpResponseData)
+	guarantee = guarantee == nil and true or guarantee
+
 	if self.options.log then
-		print(`[{method}]`, "|", req, "|", body)
+		print(`[{method}]`, "|", req, "|", body, "| guarantee=", guarantee)
 	end
 
 	const r_ok, r = request(self, method, req, body)
-	if not r_ok and http_retries < self.options.retries then
-		http_retries += 1
+	if not r_ok and r.StatusCode then
 		http_delay = math.min(http_delay + 2, 30)
 		task.wait(http_delay)
-		return http(self, method, req)
+
+		if guarantee then
+			return http(self, method, req)
+		end
+		if http_retries < self.options.retries then
+			return http(self, method, req)
+		end
 	end
 
 	http_delay, http_retries = 0, 0
@@ -100,32 +107,32 @@ function Http.new(address, token, options)
 	return setmetatable(self, Http)
 end
 
-function Http:PostAsync(req, body)
-	const r_ok, r = http(self, "POST", req)
+function Http:PostAsync(req, body, guarantee)
+	const r_ok, r = http(self, "POST", req, body, guarantee)
 	if r_ok then
 		return response_middleware(r, req, body)
 	end
 	return r_ok, r
 end
 
-function Http:PutAsync(req, body)
-	const r_ok, r = http(self, "PUT", req)
+function Http:PutAsync(req, body, guarantee)
+	const r_ok, r = http(self, "PUT", req, body, guarantee)
 	if r_ok then
 		return response_middleware(r, req, body)
 	end
 	return r_ok, r
 end
 
-function Http:GetAsync(req)
-	const r_ok, r = http(self, "GET", req)
+function Http:GetAsync(req, guarantee)
+	const r_ok, r = http(self, "GET", req, guarantee)
 	if r_ok then
 		return response_middleware(r, req)
 	end
 	return r_ok, r
 end
 
-function Http:DeleteAsync(req)
-	const r_ok, r = http(self, "DELETE", req)
+function Http:DeleteAsync(req, guarantee)
+	const r_ok, r = http(self, "DELETE", req, guarantee)
 	if r_ok then
 		return response_middleware(r, req)
 	end

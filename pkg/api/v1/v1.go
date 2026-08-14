@@ -32,10 +32,10 @@ func (v1 *V1) V1(bg_ctx context.Context, port string, gin *gin.Engine) error {
 				api_v1_group.GET(":placeId/:jobId/instance", v1.get_instance)
 			}
 			{ //AUTH POST
+				api_v1_group.POST(":placeId/:jobId", v1.connect(bg_ctx))
 				api_v1_group.POST(":placeId/:jobId/instance", v1.set_instance)
 			}
 			{ //AUTH PUT
-				api_v1_group.PUT(":placeId/:jobId", v1.connect(bg_ctx))
 				api_v1_group.PUT(":placeId/:jobId/players", v1.insert_players(bg_ctx))
 			}
 			{ //AUTH DELETE
@@ -46,6 +46,6 @@ func (v1 *V1) V1(bg_ctx context.Context, port string, gin *gin.Engine) error {
 		}
 	}
 
-	println("[V1] Started on :" + port)
+	println("[V1] Listening and serving HTTP on :" + port)
 	return gin.Run(":" + port)
 }
