@@ -50,7 +50,7 @@ func (v1 *V1) connected(bg_ctx context.Context) gin.HandlerFunc {
 		placeid := gin_ctx.Param("placeId")
 
 		game, game_err := v1.DS.GetGame(bg_ctx, placeid)
-		println(game_err)
+		println(game_err.Error())
 		if errors.Is(game_err, gorm.ErrRecordNotFound) {
 			gin_ctx.JSON(http.StatusOK, nil)
 			return
