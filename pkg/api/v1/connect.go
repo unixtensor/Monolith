@@ -11,7 +11,9 @@ import (
 )
 
 func add_game(v1 *V1, bg_ctx context.Context, gin_ctx *gin.Context, placeid, jobid string) error {
-	g := datastore.Game{PlaceId: placeid}
+	g := datastore.Game{
+		Properties: datastore.GameDetails{PlaceId: placeid},
+	}
 	j := datastore.Job{
 		JobId:   jobid,
 		PlaceId: placeid,

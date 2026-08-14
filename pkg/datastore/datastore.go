@@ -17,12 +17,23 @@ type Datastore struct {
 type DsSettings struct {
 	Redis_addr, Pg_addr, Pg_port, Pg_passwd string
 }
+
+type GameDetails struct {
+	PlaceId     string
+	Name        string `json:"Name"`
+	Created     string `json:"Created"`
+	Updated     string `json:"Updated"`
+	MaxPlayers  uint   `json:"MaxPlayers"`
+	Description string `json:"Description"`
+}
+type GameCreatorDetails struct {
+	Id   uint64 `json:"Id"`
+	Name string `json:"Name"`
+}
 type Game struct {
 	gorm.Model
-	PlaceId    string
-	Name       string `json:"Name" binding:"required"`
-	CreatorId  uint64 `json:"CreatorId" binding:"required"`
-	MaxPlayers uint   `json:"MaxPlayers" binding:"required"`
+	Properties GameDetails        `json:"Properties" binding:"required"`
+	Creator    GameCreatorDetails `json:"Creator" binding:"required"`
 }
 type Job struct {
 	gorm.Model

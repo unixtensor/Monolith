@@ -27,7 +27,7 @@ func (ds *Datastore) InsertGameDB(ctx context.Context, game Game) error {
 	if db_cr_err := ds.pg.Create(&game).Error; db_cr_err != nil {
 		return db_cr_err
 	}
-	return set_cache_marshel(ctx, ds.redis, GAME_KEY+game.PlaceId, game)
+	return set_cache_marshel(ctx, ds.redis, GAME_KEY+game.Properties.PlaceId, game)
 }
 
 func (ds *Datastore) InsertJobDB(ctx context.Context, job Job) error {
@@ -38,7 +38,7 @@ func (ds *Datastore) InsertJobDB(ctx context.Context, job Job) error {
 }
 
 func (ds *Datastore) InsertGame(ctx context.Context, game Game) error {
-	_, db_err := ds.GetGame(ctx, game.PlaceId)
+	_, db_err := ds.GetGame(ctx, game.Properties.PlaceId)
 	if errors.Is(db_err, gorm.ErrRecordNotFound) {
 		return ds.InsertGameDB(ctx, game)
 	}
