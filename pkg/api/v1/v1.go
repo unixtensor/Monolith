@@ -46,6 +46,6 @@ func (v1 *V1) V1(bg_ctx context.Context, port string, gin *gin.Engine) error {
 		}
 	}
 
-	println("[V1] Started on :" + port)
+	println("[V1] Listening and serving HTTP on :" + port)
 	return gin.Run(":" + port)
 }
