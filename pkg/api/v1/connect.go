@@ -10,6 +10,11 @@ import (
 	"gorm.io/gorm"
 )
 
+type ConnectedGame struct {
+	datastore.Game
+	jobs []string
+}
+
 func add_game(v1 *V1, bg_ctx context.Context, gin_ctx *gin.Context, placeid, jobid string) error {
 	g := datastore.Game{
 		Properties: datastore.GameDetails{PlaceId: placeid},
@@ -44,15 +49,27 @@ func (v1 *V1) connected(bg_ctx context.Context) gin.HandlerFunc {
 	return func(gin_ctx *gin.Context) {
 		placeid := gin_ctx.Param("placeId")
 
-		j, err := v1.DS.GetGame(bg_ctx, placeid)
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				gin_ctx.JSON(http.StatusOK, nil)
-				return
-			}
-			InternalError(gin_ctx, err)
+		game_data := ConnectedGame{jobs: []string{}}
+		game, game_err := v1.DS.GetGame(bg_ctx, placeid)
+		if errors.Is(game_err, gorm.ErrRecordNotFound) {
+			gin_ctx.JSON(http.StatusOK, nil)
 			return
 		}
-		gin_ctx.JSON(http.StatusOK, j)
+		if game_err != nil {
+			InternalError(gin_ctx, game_err)
+			return
+		}
+		jobs, jobs_err := v1.DS.GetJobs(bg_ctx, placeid)
+		if jobs_err != nil {
+			InternalError(gin_ctx, game_err)
+			return
+		}
+
+		game_data.Properties = game.Properties
+		game_data.Creator = game.Creator
+		for _, job := range jobs {
+			game_data.jobs = append(game_data.jobs, job.JobId)
+		}
+		gin_ctx.JSON(http.StatusOK, game_data.DeletedAt)
 	}
 }
