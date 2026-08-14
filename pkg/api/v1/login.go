@@ -13,7 +13,6 @@ func (v1 *V1) login(ctx *gin.Context) {
 		InternalError(ctx, err)
 		return
 	}
-	println(s, v1.Token)
 	if s != v1.Token {
 		ctx.Status(http.StatusUnauthorized)
 		return
