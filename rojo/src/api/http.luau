@@ -108,7 +108,7 @@ function Http.new(address, token, options)
 end
 
 function Http:PostAsync(req, body, guarantee)
-	const r_ok, r = http(self, "POST", req, guarantee)
+	const r_ok, r = http(self, "POST", req, body, guarantee)
 	if r_ok then
 		return response_middleware(r, req, body)
 	end
@@ -116,7 +116,7 @@ function Http:PostAsync(req, body, guarantee)
 end
 
 function Http:PutAsync(req, body, guarantee)
-	const r_ok, r = http(self, "PUT", req, guarantee)
+	const r_ok, r = http(self, "PUT", req, body, guarantee)
 	if r_ok then
 		return response_middleware(r, req, body)
 	end
