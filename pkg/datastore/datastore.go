@@ -32,8 +32,8 @@ type GameCreatorDetails struct {
 }
 type Game struct {
 	gorm.Model
-	Properties GameDetails        `json:"Properties" binding:"required"`
-	Creator    GameCreatorDetails `json:"Creator" binding:"required"`
+	Properties GameDetails        `json:"Properties" binding:"required" gorm:"embedded;embeddedPrefix:properties_"`
+	Creator    GameCreatorDetails `json:"Creator" binding:"required" gorm:"embedded;embeddedPrefix:creator_"`
 }
 type Job struct {
 	gorm.Model
