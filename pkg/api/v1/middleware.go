@@ -17,9 +17,9 @@ func delete_cookie(ctx *gin.Context) {
 	})
 }
 
-func (v1 *V1) verify_cookie(ctx *gin.Context, token string) bool {
+func (v1 *V1) verify_cookie(ctx *gin.Context) bool {
 	token_cookie, _ := ctx.Cookie("session_token")
-	match := token_cookie == token
+	match := token_cookie == v1.Token
 	if !match {
 		delete_cookie(ctx)
 	}
@@ -28,7 +28,7 @@ func (v1 *V1) verify_cookie(ctx *gin.Context, token string) bool {
 
 func (v1 *V1) verify_token() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if v1.verify_cookie(ctx, v1.Token) {
+		if v1.verify_cookie(ctx) {
 			ctx.Next()
 			return
 		}
