@@ -49,8 +49,8 @@ func (v1 *V1) connected(bg_ctx context.Context) gin.HandlerFunc {
 	return func(gin_ctx *gin.Context) {
 		placeid := gin_ctx.Param("placeId")
 
-		game_data := ConnectedGame{jobs: []string{}}
 		game, game_err := v1.DS.GetGame(bg_ctx, placeid)
+		println(game, game_err)
 		if errors.Is(game_err, gorm.ErrRecordNotFound) {
 			gin_ctx.JSON(http.StatusOK, nil)
 			return
@@ -65,6 +65,7 @@ func (v1 *V1) connected(bg_ctx context.Context) gin.HandlerFunc {
 			return
 		}
 
+		game_data := ConnectedGame{jobs: []string{}}
 		game_data.Properties = game.Properties
 		game_data.Creator = game.Creator
 		for _, job := range jobs {
