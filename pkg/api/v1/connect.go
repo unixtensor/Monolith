@@ -13,7 +13,7 @@ import (
 type ConnectedGame struct {
 	Properties datastore.GameProperties
 	Creator    datastore.GameCreatorDetails
-	jobs       []string
+	Jobs       []string
 }
 
 func add_game(v1 *V1, bg_ctx context.Context, gin_ctx *gin.Context, placeid, jobid string) error {
@@ -64,11 +64,12 @@ func (v1 *V1) connected(bg_ctx context.Context) gin.HandlerFunc {
 			InternalError(gin_ctx, game_err)
 			return
 		}
-		game_data := ConnectedGame{jobs: []string{}}
+
+		game_data := ConnectedGame{Jobs: []string{}}
 		game_data.Properties = game.Properties
 		game_data.Creator = game.Creator
 		for _, job := range jobs {
-			game_data.jobs = append(game_data.jobs, job.JobId)
+			game_data.Jobs = append(game_data.Jobs, job.JobId)
 		}
 		gin_ctx.JSON(http.StatusOK, game_data)
 	}
