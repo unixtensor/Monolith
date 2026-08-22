@@ -16,6 +16,9 @@ func (ds *Datastore) DeleteJob(ctx context.Context, jobid string) error {
 	if c_err := ds.redis.Del(ctx, jobid+":players").Err(); c_err != nil {
 		return c_err
 	}
+	if c_err := ds.redis.Del(ctx, jobid+":uptime").Err(); c_err != nil {
+		return c_err
+	}
 	return ds.pg.Unscoped().Where("job_id = ?", jobid).Delete(&Job{}).Error
 }
 
