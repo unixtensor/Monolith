@@ -10,12 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type ConnectedGame struct {
-	Properties datastore.GameProperties
-	Creator    datastore.GameCreatorDetails
-	Jobs       []string
-}
-
 func add_game(v1 *V1, bg_ctx context.Context, gin_ctx *gin.Context, placeid, jobid string) error {
 	g := datastore.Game{
 		Properties: datastore.GameProperties{PlaceId: placeid},

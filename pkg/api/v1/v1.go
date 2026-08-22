@@ -13,6 +13,12 @@ type V1 struct {
 	DS    *datastore.Datastore
 }
 
+type ConnectedGame struct {
+	Properties datastore.GameProperties
+	Creator    datastore.GameCreatorDetails
+	Jobs       []string
+}
+
 func InternalError(gin_ctx *gin.Context, err error) {
 	gin_ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 }

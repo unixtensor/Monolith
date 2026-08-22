@@ -9,12 +9,29 @@ import (
 
 func (v1 *V1) games(ctx context.Context) gin.HandlerFunc {
 	return func(gin_ctx *gin.Context) {
-		g, err := v1.DS.GetGames(ctx)
+		games, err := v1.DS.GetGames(ctx)
 		if err != nil {
 			InternalError(gin_ctx, err)
 			return
 		}
-		gin_ctx.JSON(http.StatusOK, g)
+		games_data := []ConnectedGame{}
+		for _, game := range games {
+			jobs, err := v1.DS.GetJobs(ctx, game.Properties.PlaceId)
+			if err != nil {
+				InternalError(gin_ctx, err)
+				return
+			}
+			cg := ConnectedGame{
+				Properties: game.Properties,
+				Creator:    game.Creator,
+				Jobs:       []string{},
+			}
+			for _, job := range jobs {
+				cg.Jobs = append(cg.Jobs, job.JobId)
+			}
+			games_data = append(games_data, cg)
+		}
+		gin_ctx.JSON(http.StatusOK, games_data)
 	}
 }
 
