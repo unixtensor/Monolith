@@ -14,14 +14,14 @@ const jobid:     string = not RS:IsStudio() and game.JobId or "studio-" .. HttpS
 const Api = {} :: Constructor
 Api.__index = Api
 Api.Root = "/api/v1"
-Api.Stem = `/{placeid}`
-Api.StemJob = Api.Stem .. `/{jobid}`
+Api.Game = `/{placeid}`
+Api.Job  = `{Api.Game}/{jobid}`
 
 type Constructor = {
 	__index: Constructor;
 	Root: string;
-	Stem: string;
-	StemJob: string;
+	Game: string;
+	Job: string;
 
 	new: (address: string, token: string, http: Http.Http) -> Api;
 	Connected: (self: Api) -> (boolean, Http.Json);
@@ -83,17 +83,17 @@ function Api.new(address, token, http)
 end
 
 function Api:Connected()
-	const r_ok, r = self.http:GetAsync(Api.Stem)
+	const r_ok, r = self.http:GetAsync(Api.Game)
 	return r_ok, r
 end
 
 function Api:Connect()
-	const r_ok, _r = self.http:PostAsync(Api.StemJob, game_details_async())
+	const r_ok, _r = self.http:PostAsync(Api.Job, game_details_async())
 	return r_ok
 end
 
 function Api:Disconnect()
-	const r_ok, _r = self.http:DeleteAsync(Api.StemJob)
+	const r_ok, _r = self.http:DeleteAsync(Api.Job)
 	return r_ok
 end
 
@@ -102,12 +102,12 @@ function Api:Players()
 	for _, player in Players:GetPlayers() do
 		p[tostring(player.UserId)] = player.Name
 	end
-	const r_ok, _r = self.http:PutAsync(Api.StemJob .. "/players", p)
+	const r_ok, _r = self.http:PutAsync(`{Api.Job}/players`, p)
 	return r_ok
 end
 
 function Api:UpTime()
-	const r_ok, _r = self.http:PostAsync(Api.StemJob .. "/uptime", workspace.DistributedGameTime)
+	const r_ok, _r = self.http:PostAsync(`{Api.Job}/uptime`, workspace.DistributedGameTime, false)
 	return r_ok
 end
 
