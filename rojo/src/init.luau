@@ -36,11 +36,13 @@ function Monolith.new(address, token)
 	assert(Http.Enabled, "Cannot proceed! Monolith REQUIRES http requests to be enabled for this game.")
 
 	const self = {}
-	self.api = Api.new(address, token, {
+	const http = Http.new(address, token, {
 		log = Monolith.HTTP_LOG;
+		root = Api.Root;
 		retries = Monolith.HTTP_RETRIES;
 	})
-	self.state = State.new(self.api)
+	self.api = Api.new(address, token, http)
+	self.state = State.new(self.api, http)
 	self.address = address
 	return setmetatable(self, Monolith)
 end

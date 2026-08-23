@@ -6,7 +6,8 @@ const Http = {} :: Constructor
 Http.__index = Http
 Http.Enabled = HttpService.HttpEnabled
 
-export type HttpOptions = {
+export type HttpOptions<T = string?> = {
+	root: T;
 	log: boolean;
 	retries: number;
 }
@@ -23,10 +24,12 @@ type Constructor = {
 export type Http = setmetatable<{
 	address: string;
 	token: string;
-	options: HttpOptions;
+	options: HttpOptions<string>;
+	Middleware: BindableFunction;
+	MiddlewareResponse: BindableFunction;
 }, typeof(Http)>
 
-type HttpMethod = "POST" | "PUT" | "GET" | "DELETE"
+export type HttpMethod = "POST" | "PUT" | "GET" | "DELETE"
 export type Json = any
 export type HttpResponseData = {
     Body: Json,
@@ -43,13 +46,12 @@ type RestDetails = {
 	body: string?;
 }
 
-const api_root:  "/api/v1" = "/api/v1"
 local http_delay:   number = 0
 local http_retries: number = 0
 
 const function request(self: Http, method: HttpMethod, req: string, body: Json?): (boolean, HttpResponseData)
 	const rest: Json = {
-		Url = self.address .. api_root .. req;
+		Url = self.address .. self.options.root .. req;
 		Method = method;
 		Headers = {
 			["Content-Type"] = "application/json";
@@ -86,7 +88,7 @@ const function http(self: Http, method: HttpMethod, req: string, body: Json?, gu
 	return r_ok, r
 end
 
-const function response_middleware(res: HttpResponseData, req: string, body: Json?): (boolean, HttpResponseData)
+const function response(res: HttpResponseData, req: string, body: Json?): (boolean, HttpResponseData)
 	if res.Success and res.Body then
 		const ok, d = pcall(HttpService.JSONDecode, HttpService, res.Body)
 		if ok then
@@ -99,44 +101,61 @@ const function response_middleware(res: HttpResponseData, req: string, body: Jso
 	return res.Success, res
 end
 
+const function http_handler(self: Http, method: HttpMethod, req: string, body: Json?, guarantee: boolean?): (boolean, HttpResponseData)
+	if not self.Middleware:Invoke(method, req, body) then
+		if self.options.log then
+			warn(`(MIDDLEWARE STOPPED...) [{method}]`, "|", req, "|", body, "| guarantee=", guarantee)
+		end
+		return false, {} :: HttpResponseData
+	end
+
+	const r_ok, r = http(self, method, req, body, guarantee)
+	if not self.MiddlewareResponse:Invoke(r_ok, r, req, body) then
+		if self.options.log then
+			warn(`(RESPONSE MIDDLEWARE STOPPED...) [{method}]`, "|", req, "|", body, "| guarantee=", guarantee, "| ok=", r_ok, "| response=", r)
+		end
+		return false, {} :: HttpResponseData
+	end
+	if r_ok then
+		return response(r, req, body)
+	end
+	return r_ok, r
+end
+
+const function bind(): BindableFunction
+	const b = Instance.new("BindableFunction")
+	function b.OnInvoke()
+		return true
+	end
+	return b
+end
+
 function Http.new(address, token, options)
 	const self = {}
+	const opts = options :: HttpOptions<string>
+	opts.root  = options.root == nil and "" or options.root :: string
+	self.options = opts
 	self.address = address
 	self.token = token
-	self.options = options
+	self.Middleware = bind()
+	self.MiddlewareResponse = bind()
 	return setmetatable(self, Http)
 end
 
 function Http:PostAsync(req, body, guarantee)
-	const r_ok, r = http(self, "POST", req, body, guarantee)
-	if r_ok then
-		return response_middleware(r, req, body)
-	end
-	return r_ok, r
+	return http_handler(self, "POST", req, body, guarantee)
 end
 
 function Http:PutAsync(req, body, guarantee)
-	const r_ok, r = http(self, "PUT", req, body, guarantee)
-	if r_ok then
-		return response_middleware(r, req, body)
-	end
-	return r_ok, r
+	return http_handler(self, "PUT", req, body, guarantee)
 end
 
 function Http:GetAsync(req, guarantee)
-	const r_ok, r = http(self, "GET", req, guarantee)
-	if r_ok then
-		return response_middleware(r, req)
-	end
-	return r_ok, r
+	return http_handler(self, "GET", req, nil, guarantee)
 end
 
 function Http:DeleteAsync(req, guarantee)
-	const r_ok, r = http(self, "DELETE", req, guarantee)
-	if r_ok then
-		return response_middleware(r, req)
-	end
-	return r_ok, r
+	return http_handler(self, "DELETE", req, nil, guarantee)
 end
 
 return Http
