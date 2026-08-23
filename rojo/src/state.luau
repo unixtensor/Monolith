@@ -23,8 +23,10 @@ export type State = setmetatable<{
 
 const function http_middleware(self: State)
 	self.http.MiddlewareResponse.OnInvoke = function(_method: http.HttpMethod, _res: string, req: string)
-		if req == `{Api.StemJob}/players` then
-			self.api:UpTime()
+		if req == `{Api.Job}/players` then --Uptime being sent after players seems most ideal?
+			if #Players:GetPlayers() ~= 0 then
+				self.api:UpTime()
+			end
 		end
 		return true
 	end
