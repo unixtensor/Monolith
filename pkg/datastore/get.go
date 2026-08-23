@@ -88,10 +88,10 @@ func (ds *Datastore) GetPlayers(ctx context.Context, jobid string) (Players, err
 	return plrs, nil
 }
 
-func (ds *Datastore) GetUptime(ctx context.Context, jobid string) (uint64, error) {
+func (ds *Datastore) GetUptime(ctx context.Context, jobid string) (float64, error) {
 	c_uptime, c_err := ds.redis.Get(ctx, jobid+":uptime").Result()
 	if c_err != nil {
 		return 0, c_err
 	}
-	return strconv.ParseUint(c_uptime, 10, 64)
+	return strconv.ParseFloat(c_uptime, 64)
 }

@@ -62,6 +62,6 @@ func (ds *Datastore) InsertPlayers(ctx context.Context, jobid string, players Pl
 	return nil
 }
 
-func (ds *Datastore) InsertUptime(ctx context.Context, jobid string, uptime uint64) error {
+func (ds *Datastore) InsertUptime(ctx context.Context, jobid string, uptime float64) error {
 	return ds.redis.Set(ctx, jobid+":uptime", uptime, TTL_INSERTS).Err()
 }

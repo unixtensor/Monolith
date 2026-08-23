@@ -11,7 +11,7 @@ func (v1 *V1) insert_uptime(ctx context.Context) gin.HandlerFunc {
 	return func(gin_ctx *gin.Context) {
 		jobid := gin_ctx.Param("jobId")
 
-		var uptime uint64
+		var uptime float64
 		if err := gin_ctx.ShouldBindJSON(&uptime); err != nil {
 			InternalError(gin_ctx, err)
 			return
