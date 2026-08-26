@@ -44,8 +44,9 @@ export const useSearch = () => {
 
 export default function SearchProvider({
 	queryKey,
+	placeholder,
 	children,
-}: Refresh & { children: React.ReactNode }) {
+}: Refresh & { placeholder: string; children: React.ReactNode }) {
 	const [searchTerm, setSearchTerm] = useState<string>("");
 
 	return (
@@ -53,7 +54,7 @@ export default function SearchProvider({
 			<div className="flex gap-2">
 				<RefreshButton queryKey={queryKey} />
 				<Input
-					placeholder="Search by name or id..."
+					placeholder={placeholder}
 					onChange={(i) => setSearchTerm(i.target.value)}
 				/>
 			</div>

@@ -17,7 +17,10 @@ function ServersList({ placeid }: { placeid: string }) {
 			<Header icon={<ServerIcon />}>Active servers</Header>
 			<p className="text-sm">Click on a server instance to manage</p>
 			<div className="flex flex-col gap-5 mt-3">
-				<SearchProvider queryKey={[`${placeid}/jobs`]}>
+				<SearchProvider
+					queryKey={[`${placeid}/jobs`]}
+					placeholder="Search by server id, player id, or player name..."
+				>
 					{jobs.data.map((job) => (
 						<ServerButton
 							key={job.JobId}

@@ -69,7 +69,10 @@ export default function Games() {
 			<Header icon={<Gamepad2Icon />}>Active games</Header>
 			<p className="text-sm">Click on a game to manage</p>
 			<div className="flex flex-col gap-5 mt-3">
-				<SearchProvider queryKey={["games"]}>
+				<SearchProvider
+					queryKey={["games"]}
+					placeholder="Search by name or id..."
+				>
 					<DisplayGames />
 				</SearchProvider>
 			</div>
