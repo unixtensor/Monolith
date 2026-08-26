@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link, type To } from "react-router";
-import type { Job } from "@/app/dashboard/jobs";
+import type { Job } from "@/app/dashboard/providers/jobs";
 
 export function ServerButton({ to, job }: { to: To; job: Job }) {
 	return (
