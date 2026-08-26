@@ -8,8 +8,8 @@ services:
             - POSTGRES_DB=monolith
         networks:
             - monolith
-        #volumes:
-        #    - /var/lib/postgresql/data:/var/lib/postgresql/data
+        volumes:
+            - /var/lib/postgresql/data:/var/lib/postgresql/data
     redis:
         image: redis:8
         restart: unless-stopped
