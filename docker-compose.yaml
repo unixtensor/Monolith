@@ -19,8 +19,6 @@ services:
         build: .
         container_name: monolith-server
         restart: unless-stopped
-        ports:
-            - "3000:3000"
         depends_on:
             - redis
             - postgres
@@ -29,16 +27,16 @@ services:
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
         networks:
             - monolith
-    # monolith:
-    #     build: ./web
-    #     container_name: monolith
-    #     restart: unless-stopped
-    #     ports:
-    #         - "8000:8000"
-    #     depends_on:
-    #         - server
-    #     networks:
-    #         - monolith
+    monolith:
+        build: ./web
+        container_name: monolith
+        restart: unless-stopped
+        ports:
+            - "8000:8000"
+        depends_on:
+            - server
+        networks:
+            - monolith
 networks:
     monolith:
         driver: bridge
