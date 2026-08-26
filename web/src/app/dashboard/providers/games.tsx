@@ -2,27 +2,29 @@ import api from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext } from "react";
 
-interface GamesSerialized {
-	[placeId: string]: {
-		[jobId: string]: JobInfo;
-	};
-}
-interface JobInfo {
-	Name: string;
-	MaxPlayers: number;
-	Players: number;
-	UpTime: number;
-}
-export interface Game extends JobInfo {
+interface GameProperties {
 	PlaceId: string;
-	JobId: string;
+	Name: string;
+	Created: string;
+	Updated: string;
+	MaxPlayers: number;
+	Description: string;
 }
+interface GameCreator {
+	Id: number;
+	Name: string;
+}
+export interface Game {
+	Properties: GameProperties;
+	Creator: GameCreator;
+	Jobs: string[];
+}
+
 export interface GamesContext {
 	data: Game[];
 	isLoading: boolean;
 	error: Error | null;
 }
-
 const GamesContext = createContext<GamesContext>({
 	data: [],
 	isLoading: true,
@@ -32,19 +34,9 @@ const GamesContext = createContext<GamesContext>({
 export const useGames = () => {
 	const context = useContext(GamesContext);
 	if (context === undefined)
-		throw new Error("useAuth must be used within a GamesProvider");
+		throw new Error("useGames must be used within a GamesProvider");
 	return context;
 };
-
-function to_array(o: GamesSerialized): Game[] {
-	return Object.entries(o).flatMap(([PlaceId, jobs]) =>
-		Object.entries(jobs).map(([JobId, job]) => ({
-			PlaceId,
-			JobId,
-			...job,
-		})),
-	);
-}
 
 export default function GamesProvider({
 	children,
@@ -56,11 +48,8 @@ export default function GamesProvider({
 		isLoading,
 		error,
 	} = useQuery<Game[]>({
-		queryKey: ["games-servers"],
-		queryFn: () =>
-			api
-				.get<GamesSerialized>("/games-servers")
-				.then((r) => to_array(r.data)),
+		queryKey: ["games"],
+		queryFn: () => api.get<Game[]>("/games").then((r) => r.data),
 	});
 	return (
 		<GamesContext.Provider value={{ data, isLoading, error }}>

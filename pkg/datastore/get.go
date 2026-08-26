@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strconv"
 	"strings"
 
 	"github.com/redis/go-redis/v9"
 )
 
-func get_db[T Game | Job](ctx context.Context, redis_c *redis.Client, k string, db_query func(*T) error) (T, error) {
+func get_cached[T Game | Job](ctx context.Context, redis_c *redis.Client, k string, db_query func(*T) error) (T, error) {
 	var r T
 	c_hit, c_err := redis_c.Get(ctx, k).Result()
 	if errors.Is(c_err, redis.Nil) {
@@ -24,7 +25,7 @@ func get_db[T Game | Job](ctx context.Context, redis_c *redis.Client, k string, 
 	return r, nil
 }
 
-func get_db_marshal[T Game | Job](ctx context.Context, redis_c *redis.Client, k string, db_query func(*T) error) (string, error) {
+func get_cached_marshal[T Game | Job](ctx context.Context, redis_c *redis.Client, k string, db_query func(*T) error) (string, error) {
 	c_hit, c_err := redis_c.Get(ctx, k).Result()
 	if errors.Is(c_err, redis.Nil) {
 		var r T
@@ -38,13 +39,13 @@ func get_db_marshal[T Game | Job](ctx context.Context, redis_c *redis.Client, k 
 }
 
 func (ds *Datastore) GetGame(ctx context.Context, placeid string) (Game, error) {
-	return get_db(ctx, ds.redis, GAME_KEY+placeid, func(g *Game) error {
+	return get_cached(ctx, ds.redis, GAME_KEY+placeid, func(g *Game) error {
 		return ds.pg.Where("game_place_id = ?", placeid).First(g).Error
 	})
 }
 
 func (ds *Datastore) GetGameMarshal(ctx context.Context, placeid string) (string, error) {
-	return get_db_marshal(ctx, ds.redis, GAME_KEY+placeid, func(g *Game) error {
+	return get_cached_marshal(ctx, ds.redis, GAME_KEY+placeid, func(g *Game) error {
 		return ds.pg.Where("game_place_id = ?", placeid).First(g).Error
 	})
 }
@@ -55,13 +56,13 @@ func (ds *Datastore) GetGames(ctx context.Context) ([]Game, error) {
 }
 
 func (ds *Datastore) GetJob(ctx context.Context, jobid string) (Job, error) {
-	return get_db(ctx, ds.redis, jobid, func(j *Job) error {
+	return get_cached(ctx, ds.redis, jobid, func(j *Job) error {
 		return ds.pg.Where("job_id = ?", jobid).First(j).Error
 	})
 }
 
 func (ds *Datastore) GetJobMarshal(ctx context.Context, jobid string) (string, error) {
-	return get_db_marshal(ctx, ds.redis, jobid, func(g *Game) error {
+	return get_cached_marshal(ctx, ds.redis, jobid, func(g *Game) error {
 		return ds.pg.Where("job_id = ?", jobid).First(g).Error
 	})
 }
@@ -85,4 +86,12 @@ func (ds *Datastore) GetPlayers(ctx context.Context, jobid string) (Players, err
 		plrs[id] = name
 	}
 	return plrs, nil
+}
+
+func (ds *Datastore) GetUptime(ctx context.Context, jobid string) (float64, error) {
+	c_uptime, c_err := ds.redis.Get(ctx, jobid+":uptime").Result()
+	if c_err != nil {
+		return 0, c_err
+	}
+	return strconv.ParseFloat(c_uptime, 64)
 }

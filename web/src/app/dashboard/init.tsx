@@ -2,7 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Suspense } from "react";
 import { Outlet } from "react-router";
-import ServersProvider from "./games-servers";
+import GamesProvider from "./providers/games";
 import Navigator from "./navigator";
 import Sidebar from "./sidebar/init";
 import Skeleton from "./skeleton";
@@ -23,18 +23,18 @@ function Header() {
 export default function Dashboard() {
 	return (
 		<Suspense fallback={<Skeleton />}>
-			<main className="bg-sidebar">
-				<ServersProvider>
+			<main>
+				<GamesProvider>
 					<SidebarProvider>
 						<Sidebar />
-						<main className="bg-background w-full overflow-x-hidden">
+						<main className="w-full overflow-x-hidden">
 							<Header />
 							<main className="mx-4">
 								<Outlet />
 							</main>
 						</main>
 					</SidebarProvider>
-				</ServersProvider>
+				</GamesProvider>
 			</main>
 		</Suspense>
 	);

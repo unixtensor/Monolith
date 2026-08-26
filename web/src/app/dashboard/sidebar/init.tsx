@@ -26,7 +26,7 @@ import {
 	ServerIcon,
 } from "lucide-react";
 import { Link } from "react-router";
-import { useGames } from "../games-servers";
+import { useGames } from "../providers/games";
 import Logout from "./logout";
 
 function Games() {
@@ -50,9 +50,12 @@ function Games() {
 				<SidebarMenuSub>
 					<SidebarMenuSubItem>
 						{games.data.map((game) => (
-							<SidebarMenuSubButton asChild key={game.PlaceId}>
-								<Link to={`/${game.PlaceId}`}>
-									<span>{game.Name}</span>
+							<SidebarMenuSubButton
+								asChild
+								key={game.Properties.PlaceId}
+							>
+								<Link to={`/${game.Properties.PlaceId}`}>
+									<span>{game.Properties.Name}</span>
 								</Link>
 							</SidebarMenuSubButton>
 						))}
@@ -72,7 +75,7 @@ function ButtonsGroup() {
 				</SidebarMenu>
 			</Collapsible>
 			<Link to="/graph">
-				<Button className="justify-baseline bg-sidebar pl-2">
+				<Button className="justify-baseline bg-transparent text-primary pl-2">
 					<GitForkIcon /> Graph
 				</Button>
 			</Link>

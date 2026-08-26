@@ -18,13 +18,14 @@ type DsSettings struct {
 	Redis_addr, Pg_addr, Pg_port, Pg_passwd string
 }
 
-type GameDetails struct {
+type GameProperties struct {
 	PlaceId     string
 	Name        string `json:"Name"`
 	Created     string `json:"Created"`
 	Updated     string `json:"Updated"`
 	MaxPlayers  uint   `json:"MaxPlayers"`
 	Description string `json:"Description"`
+	UpTime      uint64 `json:"UpTime"`
 }
 type GameCreatorDetails struct {
 	Id   uint64 `json:"Id"`
@@ -32,7 +33,7 @@ type GameCreatorDetails struct {
 }
 type Game struct {
 	gorm.Model
-	Properties GameDetails        `json:"Properties" binding:"required" gorm:"embedded;embeddedPrefix:game_"`
+	Properties GameProperties     `json:"Properties" binding:"required" gorm:"embedded;embeddedPrefix:game_"`
 	Creator    GameCreatorDetails `json:"Creator" binding:"required" gorm:"embedded;embeddedPrefix:creator_"`
 }
 type Job struct {
