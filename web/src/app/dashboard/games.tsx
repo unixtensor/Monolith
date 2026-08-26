@@ -15,12 +15,9 @@ interface GameCreator {
 	Name: string;
 }
 export interface Game {
-	ID: number;
-	CreatedAt: string;
-	UpdatedAt: string;
-	DeletedAt: string | null;
 	Properties: GameProperties;
 	Creator: GameCreator;
+	Jobs: string[];
 }
 
 export interface GamesContext {
@@ -37,7 +34,7 @@ const GamesContext = createContext<GamesContext>({
 export const useGames = () => {
 	const context = useContext(GamesContext);
 	if (context === undefined)
-		throw new Error("useAuth must be used within a GamesProvider");
+		throw new Error("useGames must be used within a GamesProvider");
 	return context;
 };
 

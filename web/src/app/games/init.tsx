@@ -1,6 +1,6 @@
-import { CircleXIcon, HardDriveIcon, LoaderCircleIcon } from "lucide-react";
-import { useGames } from "../dashboard/games-servers";
-import { GameButton } from "./button";
+import { CircleXIcon, Gamepad2Icon, LoaderCircleIcon } from "lucide-react";
+import { useGames } from "../dashboard/games";
+import GameButton from "./button/game";
 import SearchProvider, { useSearch } from "./search";
 
 export function NoResult({ children }: { children: string }) {
@@ -26,28 +26,24 @@ function DisplayGames() {
 
 	if (games.isLoading) return <Loading />;
 	if (games.data.length === 0)
-		return <NoResult>No games are running</NoResult>;
+		return <NoResult>No games are connected</NoResult>;
 
 	const filtered = games.data.filter(
 		(game) =>
-			game.Name.toLowerCase().includes(search.searchTerm.toLowerCase()) ||
-			String(game.PlaceId).includes(search.searchTerm),
+			game.Properties.Name.toLowerCase().includes(
+				search.searchTerm.toLowerCase(),
+			) || game.Properties.PlaceId.includes(search.searchTerm),
 	);
 	if (filtered.length === 0)
 		return (
 			<NoResult>{`No game with name nor id "${search.searchTerm}" found`}</NoResult>
 		);
-	return filtered.map((g) => (
+
+	return filtered.map((game) => (
 		<GameButton
-			to={`/${g.PlaceId}`}
-			game={g}
-			games={games.data}
-			key={g.JobId}
-			image={
-				g.JobId !== "studio"
-					? "https://upload.wikimedia.org/wikipedia/commons/2/29/Roblox_Icon_Transparent.png"
-					: "https://upload.wikimedia.org/wikipedia/commons/e/ee/Roblox_Studio_icon_2025.svg"
-			}
+			key={game.Properties.PlaceId}
+			to={`/${game.Properties.PlaceId}`}
+			game={game}
 		/>
 	));
 }
@@ -70,10 +66,10 @@ export function Header({
 export default function Games() {
 	return (
 		<>
-			<Header icon={<HardDriveIcon />}>Active games</Header>
+			<Header icon={<Gamepad2Icon />}>Active games</Header>
 			<p className="text-sm">Click on a game to manage</p>
 			<div className="flex flex-col gap-5 mt-3">
-				<SearchProvider queryKey={["games-servers"]}>
+				<SearchProvider queryKey={["games"]}>
 					<DisplayGames />
 				</SearchProvider>
 			</div>

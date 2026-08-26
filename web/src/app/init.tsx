@@ -19,7 +19,7 @@ function ServerError({ children }: { children: string }) {
 
 	return (
 		<main className="w-screen h-screen flex justify-center items-center">
-			<Card className="flex flex-col content-center items-center p-8 gap-5 border border-destructive">
+			<Card className="flex flex-col content-center items-center p-8 gap-5">
 				<CircleX className="w-7 h-7" />
 				<p>{children}</p>
 			</Card>

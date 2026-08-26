@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
+import api from "@/lib/axios";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { LoaderCircle, LogOutIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -14,7 +14,7 @@ export default function Logout() {
 	const handleLogout = async () => {
 		setClicked(true);
 
-		const r = await axios.post("/api/v1/logout");
+		const r = await api.post("/logout");
 		if (r.status === 200) {
 			navigator("/", { replace: true });
 			queryClient
