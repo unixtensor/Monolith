@@ -1,9 +1,9 @@
-FROM guergeiro/pnpm AS builder
+FROM ghcr.io/pnpm/pnpm:11 AS builder
 
 WORKDIR /app
 
 COPY . .
-RUN pnpm install && pnpm run build
+RUN pnpm i --frozen-lockfile && pnpm run build
 
 FROM nginx:stable-alpine
 
