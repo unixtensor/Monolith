@@ -19,7 +19,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/api/v1": {
-				target: "http://10.0.221.230:3000",
+				target: process.env.VITE_API_HOST || "http://localhost:8000",
 				changeOrigin: true,
 			},
 		},
