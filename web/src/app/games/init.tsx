@@ -1,5 +1,5 @@
 import { CircleXIcon, Gamepad2Icon, LoaderCircleIcon } from "lucide-react";
-import { useGames } from "../dashboard/games";
+import { useGames } from "../dashboard/providers/games";
 import GameButton from "./button/game";
 import SearchProvider, { useSearch } from "./search";
 

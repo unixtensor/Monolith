@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { ServerButton } from "./button/server";
 import { Header, Loading, NoResult } from "./init";
 import SearchProvider from "./search";
-import JobsProvider, { useJobs } from "../dashboard/jobs";
+import JobsProvider, { useJobs } from "../dashboard/providers/jobs";
 
 function ServersList({ placeid }: { placeid: string }) {
 	const jobs = useJobs();

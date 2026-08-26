@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { CrownIcon, PowerIcon, UsersIcon } from "lucide-react";
 import { Link, type To } from "react-router";
-import type { Game } from "../../dashboard/games";
+import type { Game } from "../../dashboard/providers/games";
 import GameButtonDropdown from "./dropdown/game";
 
 function Data({

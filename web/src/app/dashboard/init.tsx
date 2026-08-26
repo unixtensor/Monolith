@@ -2,7 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Suspense } from "react";
 import { Outlet } from "react-router";
-import GamesProvider from "./games";
+import GamesProvider from "./providers/games";
 import Navigator from "./navigator";
 import Sidebar from "./sidebar/init";
 import Skeleton from "./skeleton";

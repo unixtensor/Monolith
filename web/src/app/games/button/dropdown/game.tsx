@@ -12,7 +12,7 @@ import {
 	UsersIcon,
 } from "lucide-react";
 import { Link, type To } from "react-router";
-import { type Game } from "../../../dashboard/games";
+import { type Game } from "../../../dashboard/providers/games";
 import Dropdown from "./init";
 import {
 	Dialog,
