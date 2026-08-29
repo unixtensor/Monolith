@@ -9,7 +9,7 @@ import (
 )
 
 type ConnectedJob struct {
-	Players *datastore.Players
+	Players datastore.Players
 	UpTime  float64
 }
 
@@ -54,7 +54,7 @@ func (v1 *V1) servers(ctx context.Context) gin.HandlerFunc {
 
 		jobs_list := make(map[string]ConnectedJob)
 		for _, job := range jobs {
-			plrs, err := v1.DS.GetPlayers(ctx, placeid)
+			plrs, err := v1.DS.GetPlayers(ctx, job.JobId)
 			if err != nil {
 				InternalError(gin_ctx, err)
 				return
@@ -65,7 +65,7 @@ func (v1 *V1) servers(ctx context.Context) gin.HandlerFunc {
 				return
 			}
 			jobs_list[job.JobId] = ConnectedJob{
-				Players: &plrs,
+				Players: plrs,
 				UpTime:  uptime,
 			}
 		}
