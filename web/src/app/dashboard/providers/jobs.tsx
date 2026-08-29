@@ -2,11 +2,20 @@ import api from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useContext } from "react";
 
-export interface Job {
-	JobId: string;
+export interface JobsSerialized {
+	Id: string;
+	Job: Job;
 }
+export interface Job {
+	Players: { [userid: string]: string };
+	UpTime: number;
+}
+export interface Jobs {
+	[jobid: string]: Job;
+}
+
 export interface JobsContext {
-	data: Job[];
+	data: JobsSerialized[];
 	isLoading: boolean;
 	error: Error | null;
 }
@@ -34,10 +43,16 @@ export default function JobsProvider({
 		data = [],
 		isLoading,
 		error,
-	} = useQuery<Job[]>({
+	} = useQuery<JobsSerialized[]>({
 		queryKey: [`${placeid}/jobs`],
-		queryFn: () => api.get<Job[]>(`${placeid}/jobs`).then((r) => r.data),
+		queryFn: () =>
+			api
+				.get<Jobs>(`${placeid}/jobs`)
+				.then((r) =>
+					Object.entries(r.data).map(([Id, Job]) => ({ Id, Job })),
+				),
 	});
+
 	return (
 		<JobsContext.Provider value={{ data, isLoading, error }}>
 			{children}

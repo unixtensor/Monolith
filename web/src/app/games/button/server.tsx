@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Link, type To } from "react-router";
-import type { Job } from "@/app/dashboard/providers/jobs";
+import type { JobsSerialized } from "@/app/dashboard/providers/jobs";
 
-export function ServerButton({ to, job }: { to: To; job: Job }) {
+export function ServerButton({ to, job }: { to: To; job: JobsSerialized }) {
 	return (
 		<div className="flex w-full">
 			<Link to={to} className="w-full">
@@ -10,7 +10,8 @@ export function ServerButton({ to, job }: { to: To; job: Job }) {
 					variant="outline"
 					className="flex justify-between h-fit w-full p-5 text-primary rounded-r-none [&>a]:min-w-full"
 				>
-					<h1 className="font-bold text-lg">{job.JobId}</h1>
+					<h1 className="font-bold text-lg">{job.Id}</h1>
+					<div></div>
 				</Button>
 			</Link>
 		</div>
