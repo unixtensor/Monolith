@@ -16,24 +16,20 @@ function ServersList({ placeid }: { placeid: string }) {
 	}
 
 	return (
-		<>
-			<Header icon={<ServerIcon />}>Active servers</Header>
-			<p className="text-sm">Click on a server instance to manage</p>
-			<div className="flex flex-col gap-5 mt-3">
-				<SearchProvider
-					queryKey={[`${placeid}/jobs`]}
-					placeholder="Search by server id, player id, or player name..."
-				>
-					{jobs.data.map((job) => (
-						<ServerButton
-							key={job.Id}
-							job={job}
-							to={`/${placeid}/${job.Id}`}
-						/>
-					))}
-				</SearchProvider>
-			</div>
-		</>
+		<div className="flex flex-col gap-5 mt-3">
+			<SearchProvider
+				queryKey={[`${placeid}/jobs`]}
+				placeholder="Search by server id, player id, or player name..."
+			>
+				{jobs.data.map((job) => (
+					<ServerButton
+						key={job.Id}
+						job={job}
+						to={`/${placeid}/${job.Id}`}
+					/>
+				))}
+			</SearchProvider>
+		</div>
 	);
 }
 
@@ -41,6 +37,8 @@ export default function Servers() {
 	const { placeId } = useParams();
 	return (
 		<JobsProvider placeid={placeId as string}>
+			<Header icon={<ServerIcon />}>Active servers</Header>
+			<p className="text-sm">Click on a server instance to manage</p>
 			<ServersList placeid={placeId as string} />
 		</JobsProvider>
 	);
