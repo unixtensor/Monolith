@@ -52,7 +52,7 @@ func (v1 *V1) servers(ctx context.Context) gin.HandlerFunc {
 			return
 		}
 
-		jobs_list := map[string]ConnectedJob{}
+		jobs_list := make(map[string]ConnectedJob)
 		for _, job := range jobs {
 			plrs, err := v1.DS.GetPlayers(ctx, placeid)
 			if err != nil {
