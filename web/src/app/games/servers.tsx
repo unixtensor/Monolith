@@ -11,7 +11,7 @@ function ServersList({ placeid }: { placeid: string }) {
 
 	if (jobs.isLoading) return <Loading />;
 	if (jobs.data.length === 0) {
-		toast.error("No servers to display for this game.");
+		toast.error("No servers to display for this game");
 		return <Navigate to="/games" replace />;
 	}
 
