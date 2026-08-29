@@ -26,8 +26,19 @@ import {
 	ServerIcon,
 } from "lucide-react";
 import { Link } from "react-router";
-import { useGames } from "../providers/games";
+import { useGames, type Game } from "../providers/games";
 import Logout from "./logout";
+
+function Game({ game }: { game: Game }) {
+	if (game.Jobs.length === 0)
+		return <span className="opacity-30">{game.Properties.Name}</span>;
+
+	return (
+		<Link to={`/${game.Properties.PlaceId}`}>
+			<span>{game.Properties.Name}</span>
+		</Link>
+	);
+}
 
 function Games() {
 	const games = useGames();
@@ -54,9 +65,7 @@ function Games() {
 								asChild
 								key={game.Properties.PlaceId}
 							>
-								<Link to={`/${game.Properties.PlaceId}`}>
-									<span>{game.Properties.Name}</span>
-								</Link>
+								<Game game={game} />
 							</SidebarMenuSubButton>
 						))}
 					</SidebarMenuSubItem>
