@@ -54,7 +54,6 @@ func (v1 *V1) servers(ctx context.Context) gin.HandlerFunc {
 
 		jobs_list := map[string]ConnectedJob{}
 		for _, job := range jobs {
-			j := ConnectedJob{}
 			plrs, err := v1.DS.GetPlayers(ctx, placeid)
 			if err != nil {
 				InternalError(gin_ctx, err)
@@ -65,9 +64,10 @@ func (v1 *V1) servers(ctx context.Context) gin.HandlerFunc {
 				InternalError(gin_ctx, err)
 				return
 			}
-			j.players = plrs
-			j.uptime = uptime
-			jobs_list[job.JobId] = j
+			jobs_list[job.JobId] = ConnectedJob{
+				players: plrs,
+				uptime:  uptime,
+			}
 		}
 		gin_ctx.JSON(http.StatusOK, jobs_list)
 	}
