@@ -5,7 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/unixtensor/monolith/pkg/datastore"
 )
+
+type ConnectedJob struct {
+	players datastore.Players
+	uptime  float64
+}
 
 func (v1 *V1) games(ctx context.Context) gin.HandlerFunc {
 	return func(gin_ctx *gin.Context) {
@@ -14,24 +20,25 @@ func (v1 *V1) games(ctx context.Context) gin.HandlerFunc {
 			InternalError(gin_ctx, err)
 			return
 		}
-		games_data := []ConnectedGame{}
+
+		games_list := []ConnectedGame{}
 		for _, game := range games {
 			jobs, err := v1.DS.GetJobs(ctx, game.Properties.PlaceId)
 			if err != nil {
 				InternalError(gin_ctx, err)
 				return
 			}
-			cg := ConnectedGame{
+			g := ConnectedGame{
 				Properties: game.Properties,
 				Creator:    game.Creator,
 				Jobs:       []string{},
 			}
 			for _, job := range jobs {
-				cg.Jobs = append(cg.Jobs, job.JobId)
+				g.Jobs = append(g.Jobs, job.JobId)
 			}
-			games_data = append(games_data, cg)
+			games_list = append(games_list, g)
 		}
-		gin_ctx.JSON(http.StatusOK, games_data)
+		gin_ctx.JSON(http.StatusOK, games_list)
 	}
 }
 
@@ -39,11 +46,29 @@ func (v1 *V1) servers(ctx context.Context) gin.HandlerFunc {
 	return func(gin_ctx *gin.Context) {
 		placeid := gin_ctx.Param("placeId")
 
-		j, err := v1.DS.GetJobs(ctx, placeid)
+		jobs, err := v1.DS.GetJobs(ctx, placeid)
 		if err != nil {
 			InternalError(gin_ctx, err)
 			return
 		}
-		gin_ctx.JSON(http.StatusOK, j)
+
+		jobs_list := map[string]ConnectedJob{}
+		for _, job := range jobs {
+			j := ConnectedJob{}
+			plrs, err := v1.DS.GetPlayers(ctx, placeid)
+			if err != nil {
+				InternalError(gin_ctx, err)
+				return
+			}
+			uptime, err := v1.DS.GetUptime(ctx, job.JobId)
+			if err != nil {
+				InternalError(gin_ctx, err)
+				return
+			}
+			j.players = plrs
+			j.uptime = uptime
+			jobs_list[job.JobId] = j
+		}
+		gin_ctx.JSON(http.StatusOK, jobs_list)
 	}
 }
