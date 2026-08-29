@@ -9,7 +9,7 @@ import (
 )
 
 type ConnectedJob struct {
-	Players datastore.Players
+	Players *datastore.Players
 	UpTime  float64
 }
 
@@ -65,7 +65,7 @@ func (v1 *V1) servers(ctx context.Context) gin.HandlerFunc {
 				return
 			}
 			jobs_list[job.JobId] = ConnectedJob{
-				Players: plrs,
+				Players: &plrs,
 				UpTime:  uptime,
 			}
 		}
