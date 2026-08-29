@@ -13,7 +13,7 @@ function ServersList({ placeid }: { placeid: string }) {
 		return <NoResult>This game has no running servers.</NoResult>;
 
 	return (
-		<>
+		<JobsProvider placeid={placeid}>
 			<Header icon={<ServerIcon />}>Active servers</Header>
 			<p className="text-sm">Click on a server instance to manage</p>
 			<div className="flex flex-col gap-5 mt-3">
@@ -30,15 +30,11 @@ function ServersList({ placeid }: { placeid: string }) {
 					))}
 				</SearchProvider>
 			</div>
-		</>
+		</JobsProvider>
 	);
 }
 
 export default function Servers() {
 	const { placeId } = useParams();
-	return (
-		<JobsProvider placeid={placeId as string}>
-			<ServersList placeid={placeId as string} />
-		</JobsProvider>
-	);
+	return <ServersList placeid={placeId as string} />;
 }
