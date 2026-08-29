@@ -1,5 +1,5 @@
 import { ServerIcon } from "lucide-react";
-import { Link, useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 import { ServerButton } from "./button/server";
 import { Header, Loading } from "./init";
 import { toast } from "sonner";
@@ -12,7 +12,7 @@ function ServersList({ placeid }: { placeid: string }) {
 	if (jobs.isLoading) return <Loading />;
 	if (jobs.data.length === 0) {
 		toast.error("No servers to display for this game.");
-		return <Link to="/games" replace />;
+		return <Navigate to="/games" replace />;
 	}
 
 	return (
