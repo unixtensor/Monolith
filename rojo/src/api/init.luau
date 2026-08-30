@@ -34,7 +34,6 @@ export type Api = setmetatable<{ http: Http.Http }, typeof(Api)>
 type GameDetails = {
 	Properties: {
 		Name: string;
-		UpTime: number;
 		Created: string;
 		Updated: string;
 		MaxPlayers: number;
@@ -48,7 +47,6 @@ type GameDetails = {
 local game_details: GameDetails = {
 	Properties = {
 		Name = RBX_ERROR; --game.Name(?)
-		UpTime = workspace.DistributedGameTime;
 		Created = RBX_ERROR;
 		Updated = RBX_ERROR;
 		MaxPlayers = Players.MaxPlayers;

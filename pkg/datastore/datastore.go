@@ -25,7 +25,6 @@ type GameProperties struct {
 	Updated     string `json:"Updated"`
 	MaxPlayers  uint   `json:"MaxPlayers"`
 	Description string `json:"Description"`
-	UpTime      uint64 `json:"UpTime"`
 }
 type GameCreatorDetails struct {
 	Id   uint64 `json:"Id"`
