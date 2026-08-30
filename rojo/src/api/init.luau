@@ -28,14 +28,12 @@ type Constructor = {
 	Connect: (self: Api) -> boolean;
 	Disconnect: (self: Api) -> boolean;
 	Players: (self: Api) -> boolean;
-	UpTime: (self: Api) -> boolean;
 }
 export type Api = setmetatable<{ http: Http.Http }, typeof(Api)>
 
 type GameDetails = {
 	Properties: {
 		Name: string;
-		UpTime: number;
 		Created: string;
 		Updated: string;
 		MaxPlayers: number;
@@ -49,7 +47,6 @@ type GameDetails = {
 local game_details: GameDetails = {
 	Properties = {
 		Name = RBX_ERROR; --game.Name(?)
-		UpTime = workspace.DistributedGameTime;
 		Created = RBX_ERROR;
 		Updated = RBX_ERROR;
 		MaxPlayers = Players.MaxPlayers;
@@ -103,11 +100,6 @@ function Api:Players()
 		p[tostring(player.UserId)] = player.Name
 	end
 	const r_ok, _r = self.http:PutAsync(`{Api.Job}/players`, p)
-	return r_ok
-end
-
-function Api:UpTime()
-	const r_ok, _r = self.http:PostAsync(`{Api.Job}/uptime`, workspace.DistributedGameTime, false)
 	return r_ok
 end
 

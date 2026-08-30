@@ -45,7 +45,6 @@ func (v1 *V1) V1(bg_ctx context.Context, port string, gin *gin.Engine) error {
 		{
 			api_v1_group.POST(":placeId/:jobId", v1.connect(bg_ctx))
 			api_v1_group.POST(":placeId/:jobId/instance", v1.set_instance)
-			api_v1_group.POST(":placeId/:jobId/uptime", v1.insert_uptime(bg_ctx))
 		}
 		{
 			api_v1_group.PUT(":placeId/:jobId/players", v1.insert_players(bg_ctx))

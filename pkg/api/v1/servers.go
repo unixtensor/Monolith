@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/unixtensor/monolith/pkg/datastore"
@@ -10,7 +11,7 @@ import (
 
 type ConnectedJob struct {
 	Players datastore.Players
-	UpTime  float64
+	UpTime  time.Time
 }
 
 func (v1 *V1) games(ctx context.Context) gin.HandlerFunc {
@@ -59,7 +60,7 @@ func (v1 *V1) servers(ctx context.Context) gin.HandlerFunc {
 				InternalError(gin_ctx, err)
 				return
 			}
-			uptime, err := v1.DS.GetUptime(ctx, job.JobId)
+			uptime, err := v1.DS.GetJobCreation(ctx, job.JobId)
 			if err != nil {
 				InternalError(gin_ctx, err)
 				return
