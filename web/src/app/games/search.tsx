@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQueryClient, type QueryKey } from "@tanstack/react-query";
-import { RefreshCwIcon } from "lucide-react";
+import { CircleXIcon, RefreshCwIcon } from "lucide-react";
 import { createContext, useContext, useState } from "react";
 import { toast } from "sonner";
 
 interface Refresh {
 	queryKey: QueryKey;
 }
-interface SearchContext {
+export interface SearchContext {
 	searchTerm: string;
 }
 const Context = createContext<SearchContext>({ searchTerm: "" });
@@ -35,6 +35,15 @@ function RefreshButton({ queryKey }: Refresh) {
 	);
 }
 
+export function NoResult({ children }: { children: string }) {
+	return (
+		<div className="flex flex-col gap-5 justify-center items-center h-100">
+			<CircleXIcon className="size-10" />
+			<h1>{children}</h1>
+		</div>
+	);
+}
+
 export const useSearch = () => {
 	const context = useContext(Context);
 	if (context === undefined)
@@ -55,7 +64,9 @@ export default function SearchProvider({
 				<RefreshButton queryKey={queryKey} />
 				<Input
 					placeholder={placeholder}
-					onChange={(i) => setSearchTerm(i.target.value)}
+					onChange={(i) =>
+						setSearchTerm(i.target.value.toLowerCase())
+					}
 				/>
 			</div>
 			{children}

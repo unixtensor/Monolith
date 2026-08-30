@@ -1,19 +1,18 @@
-import { CircleXIcon, Gamepad2Icon, LoaderCircleIcon } from "lucide-react";
-import { useGames } from "../dashboard/providers/games";
+import { Gamepad2Icon, LoaderCircleIcon } from "lucide-react";
+import {
+	useGames,
+	type Game,
+	type GamesContext,
+} from "../dashboard/providers/games";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { useEffect } from "react";
 import GameButton from "./button/game";
-import SearchProvider, { useSearch } from "./search";
-
-export function NoResult({ children }: { children: string }) {
-	return (
-		<div className="flex flex-col gap-5 justify-center items-center h-100">
-			<CircleXIcon className="size-10" />
-			<h1>{children}</h1>
-		</div>
-	);
-}
+import SearchProvider, {
+	NoResult,
+	useSearch,
+	type SearchContext,
+} from "./search";
 
 export function Loading() {
 	return (
@@ -23,36 +22,42 @@ export function Loading() {
 	);
 }
 
-function useParamQueryRefresh() {
+function useParams() {
 	const queryClient = useQueryClient();
 	const [searchParams, _] = useSearchParams();
 
 	useEffect(() => {
-		queryClient.refetchQueries({ queryKey: ["games"] });
+		if (searchParams.has("refresh")) {
+			queryClient.refetchQueries({ queryKey: ["games"] });
+		}
 	}, [searchParams]);
 }
 
+function useGamesSearch(games: GamesContext): [Game[], SearchContext] {
+	const search = useSearch();
+
+	const filtered = games.data.filter(
+		(game) =>
+			game.Properties.Name.includes(search.searchTerm) ||
+			game.Properties.PlaceId.includes(search.searchTerm),
+	);
+	return [filtered, search];
+}
+
 function DisplayGames() {
-	useParamQueryRefresh();
+	useParams();
 
 	const games = useGames();
-	const search = useSearch();
+	const [filtered, search] = useGamesSearch(games);
 
 	if (games.isLoading) return <Loading />;
 	if (games.data.length === 0)
 		return <NoResult>No games are connected</NoResult>;
 
-	const filtered = games.data.filter(
-		(game) =>
-			game.Properties.Name.toLowerCase().includes(
-				search.searchTerm.toLowerCase(),
-			) || game.Properties.PlaceId.includes(search.searchTerm),
-	);
 	if (filtered.length === 0)
 		return (
 			<NoResult>{`No game with name nor id "${search.searchTerm}" found`}</NoResult>
 		);
-
 	return filtered.map((game) => (
 		<GameButton
 			key={game.Properties.PlaceId}
