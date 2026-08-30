@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"strconv"
 	"strings"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -67,6 +67,11 @@ func (ds *Datastore) GetJobMarshal(ctx context.Context, jobid string) (string, e
 	})
 }
 
+func (ds *Datastore) GetJobCreation(ctx context.Context, jobid string) (time.Time, error) {
+	j, e := ds.GetJob(ctx, jobid)
+	return j.CreatedAt, e
+}
+
 func (ds *Datastore) GetJobs(ctx context.Context, placeid string) ([]Job, error) {
 	var jobs []Job
 	return jobs, ds.pg.Where("place_id = ?", placeid).Find(&jobs).Error
@@ -86,12 +91,4 @@ func (ds *Datastore) GetPlayers(ctx context.Context, jobid string) (Players, err
 		plrs[id] = name
 	}
 	return plrs, nil
-}
-
-func (ds *Datastore) GetUptime(ctx context.Context, jobid string) (float64, error) {
-	c_uptime, c_err := ds.redis.Get(ctx, jobid+":uptime").Result()
-	if c_err != nil {
-		return 0, c_err
-	}
-	return strconv.ParseFloat(c_uptime, 64)
 }
