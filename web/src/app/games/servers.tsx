@@ -12,7 +12,7 @@ function ServersList({ placeid }: { placeid: string }) {
 	if (jobs.isLoading) return <Loading />;
 	if (jobs.data.length === 0) {
 		toast.error("No servers to display for this game");
-		return <Navigate to="/games" replace />;
+		return <Navigate to="/games?refresh=1" replace />;
 	}
 
 	return (
@@ -21,13 +21,15 @@ function ServersList({ placeid }: { placeid: string }) {
 				queryKey={[`${placeid}/jobs`]}
 				placeholder="Search by server id, player id, or player name..."
 			>
-				{jobs.data.map((job) => (
-					<ServerButton
-						key={job.Id}
-						job={job}
-						to={`/${placeid}/${job.Id}`}
-					/>
-				))}
+				<div className="flex flex-col gap-3">
+					{jobs.data.map((job) => (
+						<ServerButton
+							key={job.Id}
+							job={job}
+							to={`/${placeid}/${job.Id}`}
+						/>
+					))}
+				</div>
 			</SearchProvider>
 		</div>
 	);

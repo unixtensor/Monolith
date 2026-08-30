@@ -1,5 +1,8 @@
 import { CircleXIcon, Gamepad2Icon, LoaderCircleIcon } from "lucide-react";
 import { useGames } from "../dashboard/providers/games";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router";
+import { useEffect } from "react";
 import GameButton from "./button/game";
 import SearchProvider, { useSearch } from "./search";
 
@@ -20,7 +23,18 @@ export function Loading() {
 	);
 }
 
+function useParamQueryRefresh() {
+	const queryClient = useQueryClient();
+	const [searchParams, _] = useSearchParams();
+
+	useEffect(() => {
+		queryClient.refetchQueries({ queryKey: ["games"] });
+	}, [searchParams]);
+}
+
 function DisplayGames() {
+	useParamQueryRefresh();
+
 	const games = useGames();
 	const search = useSearch();
 
