@@ -26,12 +26,11 @@ function job_has_player(job: JobsSerialized, searchTerm: string): boolean {
 function useJobsSearch(jobs: JobsContext): [JobsSerialized[], SearchContext] {
 	const search = useSearch();
 
-	const filtered = jobs.data.filter((job) => {
-		return (
+	const filtered = jobs.data.filter(
+		(job) =>
 			job.Id.toLowerCase().includes(search.searchTerm) ||
-			job_has_player(job, search.searchTerm)
-		);
-	});
+			job_has_player(job, search.searchTerm),
+	);
 	return [filtered, search];
 }
 
