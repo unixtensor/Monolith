@@ -1,4 +1,4 @@
-import { Gamepad2Icon, LoaderCircleIcon } from "lucide-react";
+import { LoaderCircleIcon } from "lucide-react";
 import {
 	useGames,
 	type Game,
@@ -13,6 +13,7 @@ import SearchProvider, {
 	useSearch,
 	type SearchContext,
 } from "./search";
+import { useTitle } from "../hooks/useTitle";
 
 export function Loading() {
 	return (
@@ -44,7 +45,7 @@ function useGamesSearch(games: GamesContext): [Game[], SearchContext] {
 	return [filtered, search];
 }
 
-function DisplayGames() {
+function GamesList() {
 	useParams();
 
 	const games = useGames();
@@ -83,18 +84,16 @@ export function Header({
 }
 
 export default function Games() {
+	useTitle("Games");
+
 	return (
-		<>
-			<Header icon={<Gamepad2Icon />}>Active games</Header>
-			<p className="text-sm">Click on a game to manage</p>
-			<div className="flex flex-col gap-5 mt-3">
-				<SearchProvider
-					queryKey={["games"]}
-					placeholder="Search by name or id..."
-				>
-					<DisplayGames />
-				</SearchProvider>
-			</div>
-		</>
+		<SearchProvider
+			title="Active games"
+			description="Click on a game to manage"
+			queryKey={["games"]}
+			placeholder="Search by name or id..."
+		>
+			<GamesList />
+		</SearchProvider>
 	);
 }

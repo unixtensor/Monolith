@@ -1,7 +1,6 @@
-import { ServerIcon } from "lucide-react";
 import { Navigate, useParams } from "react-router";
 import { ServerButton } from "./button/server";
-import { Header, Loading } from "./init";
+import { Loading } from "./init";
 import { toast } from "sonner";
 import SearchProvider, {
 	NoResult,
@@ -13,17 +12,26 @@ import JobsProvider, {
 	type JobsContext,
 	type JobsSerialized,
 } from "../dashboard/providers/jobs";
+import { useTitle } from "../hooks/useTitle";
+
+function job_has_player(job: JobsSerialized, searchTerm: string): boolean {
+	return (
+		Object.entries(job.Job.Players).filter(
+			([id, name]) =>
+				searchTerm === id || name.toLowerCase().includes(searchTerm),
+		).length !== 0
+	);
+}
 
 function useJobsSearch(jobs: JobsContext): [JobsSerialized[], SearchContext] {
 	const search = useSearch();
 
-	const filtered = jobs.data.filter(
-		(job) =>
+	const filtered = jobs.data.filter((job) => {
+		return (
 			job.Id.toLowerCase().includes(search.searchTerm) ||
-			Object.entries(job.Job.Players)
-				.flatMap((plr) => plr)
-				.filter((plr) => plr.includes(search.searchTerm)),
-	);
+			job_has_player(job, search.searchTerm)
+		);
+	});
 	return [filtered, search];
 }
 
@@ -39,7 +47,7 @@ function ServersList({ placeid }: { placeid: string }) {
 
 	if (filtered.length === 0)
 		return (
-			<NoResult>{`No servers with name nor player ${search.searchTerm}`}</NoResult>
+			<NoResult>{`No servers with name nor player "${search.searchTerm}"`}</NoResult>
 		);
 	return filtered.map((job) => (
 		<ServerButton key={job.Id} job={job} to={`/${placeid}/${job.Id}`} />
@@ -48,12 +56,13 @@ function ServersList({ placeid }: { placeid: string }) {
 
 export default function Servers() {
 	const { placeId } = useParams();
+	useTitle("Servers");
 
 	return (
 		<JobsProvider placeid={placeId as string}>
-			<Header icon={<ServerIcon />}>Active servers</Header>
-			<p className="text-sm">Click on a server instance to manage</p>
 			<SearchProvider
+				title="Active servers"
+				description="Click on a server instance to manage"
 				queryKey={[`${placeId}/jobs`]}
 				placeholder="Search by server name, player id, or player name..."
 			>

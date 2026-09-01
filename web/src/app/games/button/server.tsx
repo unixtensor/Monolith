@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link, type To } from "react-router";
 import type { JobsSerialized } from "@/app/dashboard/providers/jobs";
 import { ClockIcon, HammerIcon, UsersIcon } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
 function Data({
 	icon,
@@ -20,15 +20,22 @@ function Data({
 }
 
 function Metadata({ job }: { job: JobsSerialized }) {
+	const job_uptime = new Date(job.Job.UpTime);
+
 	return (
 		<div className="flex gap-3 opacity-60 [&>div]:flex [&>div]:gap-1 [&>div]:items-center">
 			<Data icon={<UsersIcon />}>
 				{Object.entries(job.Job.Players).length}
 			</Data>
 			<Data icon={<ClockIcon />}>
-				{formatDistanceToNow(new Date(job.Job.UpTime), {
-					addSuffix: true,
-				})}
+				{format(job_uptime, "yyyy-MM-dd HH:mm")}
+				<span className="opacity-70">
+					(
+					{formatDistanceToNow(job_uptime, {
+						addSuffix: true,
+					})}
+					)
+				</span>
 			</Data>
 		</div>
 	);
@@ -36,12 +43,14 @@ function Metadata({ job }: { job: JobsSerialized }) {
 
 function Name({ job }: { job: JobsSerialized }) {
 	const is_studio = job.Id.startsWith("studio");
-	const id = <h1 className="font-bold text-lg">{job.Id}</h1>;
+	const id = <h1 className="text-lg">{job.Id}</h1>;
 
 	if (is_studio)
 		return (
 			<div className="flex items-center gap-2">
-				<HammerIcon className="text-[#0c86d9] size-5" />
+				<div className="bg-[#031f33] p-1.5 size-fit rounded-full">
+					<HammerIcon className="text-[#0c86d9] size-5" />
+				</div>
 				{id}
 			</div>
 		);

@@ -120,8 +120,11 @@ export function SidebarSkeleton() {
 export default function Sidebar() {
 	return (
 		<ShadSidebar>
-			<SidebarHeader>
-				<h1 className="text-center">Monolith</h1>
+			<SidebarHeader className="mt-3">
+				<div className="flex gap-2 items-center ml-1">
+					<h1 className="font-black">Monolith</h1>
+					<p className="opacity-40 text-sm">alpha</p>
+				</div>
 			</SidebarHeader>
 			<SidebarContent>
 				<ButtonsGroup />
