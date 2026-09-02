@@ -11,7 +11,7 @@ import JobsProvider, {
 	useJobs,
 	type JobsContext,
 	type JobsSerialized,
-} from "../dashboard/providers/jobs";
+} from "../providers/jobs";
 import { useTitle } from "../hooks/useTitle";
 
 function job_has_player(job: JobsSerialized, searchTerm: string): boolean {

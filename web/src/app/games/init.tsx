@@ -1,9 +1,5 @@
 import { LoaderCircleIcon } from "lucide-react";
-import {
-	useGames,
-	type Game,
-	type GamesContext,
-} from "../dashboard/providers/games";
+import { useGames, type Game, type GamesContext } from "../providers/games";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { useEffect } from "react";

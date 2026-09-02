@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowRightIcon, InfoIcon, UserIcon, UsersIcon } from "lucide-react";
 import Dropdown from "./init";
-import type { JobsSerialized } from "@/app/dashboard/providers/jobs";
+import type { JobsSerialized } from "@/app/providers/jobs";
 import {
 	Dialog,
 	DialogContent,
