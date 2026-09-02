@@ -11,9 +11,9 @@ import {
 	InfoIcon,
 	UsersIcon,
 } from "lucide-react";
-import { Link, type To } from "react-router";
+import { Link } from "react-router";
 import { type Game } from "../../../dashboard/providers/games";
-import Dropdown from "./init";
+import Dropdown, { ExternalLink, PromptInfo } from "./init";
 import {
 	Dialog,
 	DialogContent,
@@ -22,41 +22,6 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { format, parseISO } from "date-fns";
-import type React from "react";
-
-function InfoLink({ to, children }: { to: To; children: React.ReactNode }) {
-	return (
-		<Link
-			to={to}
-			target="_blank"
-			rel="noopener noreferrer"
-			className="flex items-center gap-1 w-fit"
-		>
-			{children}
-			<ExternalLinkIcon className="opacity-40 size-4" />
-		</Link>
-	);
-}
-
-function InfoRow({
-	icon,
-	label,
-	children,
-}: {
-	icon: React.ReactNode;
-	label: string;
-	children: React.ReactNode;
-}) {
-	return (
-		<div className="flex flex-col">
-			<div className="flex gap-1 items-center mb-1">
-				{icon}
-				<p>{`${label}:`}</p>
-			</div>
-			<p className="opacity-70">{children}</p>
-		</div>
-	);
-}
 
 function InfoDialog({ game }: { game: Game }) {
 	return (
@@ -67,39 +32,39 @@ function InfoDialog({ game }: { game: Game }) {
 				</DialogTitle>
 			</DialogHeader>
 			<div className="flex flex-col gap-4">
-				<InfoRow icon={<CrownIcon />} label="Creator">
-					<InfoLink
+				<PromptInfo icon={<CrownIcon />} label="Creator">
+					<ExternalLink
 						to={`https://www.roblox.com/users/${game.Creator.Id}/profile`}
 					>
 						{game.Creator.Name}
-					</InfoLink>
-				</InfoRow>
-				<InfoRow icon={<HouseIcon />} label="Place ID">
-					<InfoLink
+					</ExternalLink>
+				</PromptInfo>
+				<PromptInfo icon={<HouseIcon />} label="Place ID">
+					<ExternalLink
 						to={`https://www.roblox.com/games/${game.Properties.PlaceId}`}
 					>
 						{game.Properties.PlaceId}
-					</InfoLink>
-				</InfoRow>
-				<InfoRow icon={<UsersIcon />} label="Server Size">
+					</ExternalLink>
+				</PromptInfo>
+				<PromptInfo icon={<UsersIcon />} label="Server Size">
 					{game.Properties.MaxPlayers}
-				</InfoRow>
-				<InfoRow icon={<InfoIcon />} label="Description">
+				</PromptInfo>
+				<PromptInfo icon={<InfoIcon />} label="Description">
 					{game.Properties.Description}
-				</InfoRow>
+				</PromptInfo>
 				<div className="flex justify-between">
-					<InfoRow icon={<InfoIcon />} label="Created">
+					<PromptInfo icon={<InfoIcon />} label="Created">
 						{format(
 							parseISO(game.Properties.Created),
 							"yyyy-MM-dd HH:mm",
 						)}
-					</InfoRow>
-					<InfoRow icon={<InfoIcon />} label="Last Updated">
+					</PromptInfo>
+					<PromptInfo icon={<InfoIcon />} label="Last Updated">
 						{format(
 							parseISO(game.Properties.Updated),
 							"yyyy-MM-dd HH:mm",
 						)}
-					</InfoRow>
+					</PromptInfo>
 				</div>
 			</div>
 		</DialogContent>

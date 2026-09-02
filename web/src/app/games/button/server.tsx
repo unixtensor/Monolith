@@ -3,6 +3,7 @@ import { Link, type To } from "react-router";
 import type { JobsSerialized } from "@/app/dashboard/providers/jobs";
 import { ClockIcon, HammerIcon, UsersIcon } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
+import ServerButtonDropdown from "./dropdown/server";
 
 function Data({
 	icon,
@@ -63,12 +64,15 @@ export function ServerButton({ to, job }: { to: To; job: JobsSerialized }) {
 			<Link to={to} className="w-full">
 				<Button
 					variant="outline"
-					className="flex flex-col justify-between items-baseline h-fit w-full p-5 [&>a]:min-w-full"
+					className="flex flex-col justify-between items-baseline h-fit w-full p-5 rounded-r-none [&>a]:min-w-full"
 				>
 					<Name job={job} />
 					<Metadata job={job} />
 				</Button>
 			</Link>
+			<div>
+				<ServerButtonDropdown job={job} />
+			</div>
 		</div>
 	);
 }
