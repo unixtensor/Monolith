@@ -5,7 +5,7 @@ import Login from "./app/login/init";
 import Games from "./app/games/init";
 import Servers from "./app/games/servers";
 import Server from "./app/server/init";
-import ServerDashboard from "./app/server/dashboard";
+import ServerDashboard from "./app/server/dashboard/init";
 
 const Dashboard = lazy(() => import("./app/dashboard/init"));
 

@@ -49,8 +49,8 @@ function Name({ job }: { job: JobsSerialized }) {
 	if (is_studio)
 		return (
 			<div className="flex items-center gap-2">
-				<div className="bg-[#031f33] p-1.5 size-fit rounded-full">
-					<HammerIcon className="text-[#0c86d9] size-5" />
+				<div className="bg-studio-background p-1.5 size-fit rounded-full">
+					<HammerIcon className="text-studio size-5" />
 				</div>
 				{id}
 			</div>

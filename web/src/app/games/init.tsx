@@ -9,7 +9,7 @@ import SearchProvider, {
 	useSearch,
 	type SearchContext,
 } from "./search";
-import { useTitle } from "../hooks/useTitle";
+import { useTitle } from "../../hooks/useTitle";
 
 export function Loading() {
 	return (

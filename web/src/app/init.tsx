@@ -3,7 +3,7 @@ import { CircleX, LoaderCircleIcon } from "lucide-react";
 import { Suspense } from "react";
 import { Outlet } from "react-router";
 import { useAuth } from "./auth/init";
-import { useTitle } from "./hooks/useTitle";
+import { useTitle } from "../hooks/useTitle";
 import Login from "./login/init";
 
 function Loading() {

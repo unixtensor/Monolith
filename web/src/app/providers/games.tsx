@@ -1,6 +1,7 @@
 import api from "@/lib/axios";
+import context from "@/lib/context";
 import { useQuery } from "@tanstack/react-query";
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 
 interface GameProperties {
 	PlaceId: string;
@@ -32,10 +33,10 @@ const GamesContext = createContext<GamesContext>({
 });
 
 export const useGames = () => {
-	const context = useContext(GamesContext);
-	if (context === undefined)
-		throw new Error("useGames must be used within a GamesProvider");
-	return context;
+	return context(
+		GamesContext,
+		"useGames must be used within a GamesProvider",
+	);
 };
 
 export default function GamesProvider({
@@ -51,6 +52,7 @@ export default function GamesProvider({
 		queryKey: ["games"],
 		queryFn: () => api.get<Game[]>("/games").then((r) => r.data),
 	});
+
 	return (
 		<GamesContext.Provider value={{ data, isLoading, error }}>
 			{children}
