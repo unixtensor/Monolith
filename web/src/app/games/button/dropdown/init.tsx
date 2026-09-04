@@ -42,7 +42,7 @@ export function PromptInfo({
 				{icon}
 				<p>{`${label}:`}</p>
 			</div>
-			<p className="opacity-70">{children}</p>
+			<p className="opacity-70 whitespace-pre-wrap">{children}</p>
 		</div>
 	);
 }

@@ -1,4 +1,4 @@
-import { LoaderCircleIcon } from "lucide-react";
+import { LoaderCircleIcon, ServerIcon } from "lucide-react";
 import { useGames, type Game, type GamesContext } from "../providers/games";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
@@ -10,6 +10,7 @@ import SearchProvider, {
 	type SearchContext,
 } from "./search";
 import { useTitle } from "../../hooks/useTitle";
+import { Card } from "@/components/ui/card";
 
 export function Loading() {
 	return (
@@ -83,11 +84,15 @@ export default function Games() {
 	useTitle("Games");
 
 	return (
-		<SearchProvider
-			queryKey={["games"]}
-			placeholder="Search by name or id..."
-		>
-			<GamesList />
-		</SearchProvider>
+		<Card className="flex flex-col w-full gap-5 p-5">
+			<SearchProvider
+				title="Games"
+				icon={<ServerIcon />}
+				queryKey={["games"]}
+				placeholder="Search by name or id..."
+			>
+				<GamesList />
+			</SearchProvider>
+		</Card>
 	);
 }

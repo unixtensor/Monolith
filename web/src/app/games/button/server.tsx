@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link, type To } from "react-router";
 import type { JobsSerialized } from "@/app/providers/jobs";
-import { ClockIcon, HammerIcon, UsersIcon } from "lucide-react";
+import { ActivityIcon, HammerIcon, UsersIcon } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import ServerButtonDropdown from "./dropdown/server";
 
@@ -28,7 +28,7 @@ function Metadata({ job }: { job: JobsSerialized }) {
 			<Data icon={<UsersIcon />}>
 				{Object.entries(job.Job.Players).length}
 			</Data>
-			<Data icon={<ClockIcon />}>
+			<Data icon={<ActivityIcon />}>
 				{format(job_uptime, "yyyy-MM-dd HH:mm")}
 				<span className="opacity-70">
 					(
@@ -64,7 +64,7 @@ export function ServerButton({ to, job }: { to: To; job: JobsSerialized }) {
 			<Link to={to} className="w-full">
 				<Button
 					variant="outline"
-					className="flex flex-col justify-between items-baseline h-fit w-full p-5 rounded-r-none [&>a]:min-w-full"
+					className="flex flex-col gap-2 justify-between items-baseline h-fit w-full p-5 rounded-r-none [&>a]:min-w-full"
 				>
 					<Name job={job} />
 					<Metadata job={job} />

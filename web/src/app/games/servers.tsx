@@ -16,6 +16,7 @@ import { useCurrentGame } from "../providers/current";
 import GameInfoCard from "./info";
 import { ServerIcon, UsersIcon } from "lucide-react";
 import Widget from "../dashboard/widget";
+import { Card } from "@/components/ui/card";
 
 function job_has_player(job: JobsSerialized, searchTerm: string): boolean {
 	return (
@@ -97,16 +98,18 @@ export default function Servers() {
 		<>
 			<GameInfoCard game={game.current} />
 			<div className="flex gap-5 mt-5">
-				<div className="flex flex-col w-full gap-5">
+				<Card className="flex flex-col w-full gap-5 p-5">
 					<SearchProvider
+						title="Servers"
+						icon={<ServerIcon />}
 						queryKey={[`${placeid}/jobs`]}
 						placeholder="Search by server name, player id, or player name..."
 					>
-						<div className="flex flex-col gap-3 w-full">
+						<div className="flex flex-col gap-2 w-full">
 							<ServersList placeid={placeid} jobs={jobs} />
 						</div>
 					</SearchProvider>
-				</div>
+				</Card>
 				<div className="flex flex-col gap-4 size-fit">
 					<TotalServers jobs={jobs.data} />
 					<TotalPlayers jobs={jobs.data} />
