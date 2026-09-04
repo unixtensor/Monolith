@@ -1,7 +1,6 @@
 import { Navigate, Outlet, useParams } from "react-router";
-import JobsProvider from "../providers/jobs";
 import { toast } from "sonner";
-import { CurrentGameProvider, CurrentJobProvider } from "../providers/current";
+import { CurrentJobProvider } from "../providers/current";
 
 export default function Servers() {
 	const { placeId, jobId } = useParams();
@@ -12,12 +11,8 @@ export default function Servers() {
 	}
 
 	return (
-		<JobsProvider placeid={placeId}>
-			<CurrentGameProvider placeid={placeId}>
-				<CurrentJobProvider jobid={jobId}>
-					<Outlet />
-				</CurrentJobProvider>
-			</CurrentGameProvider>
-		</JobsProvider>
+		<CurrentJobProvider jobid={jobId}>
+			<Outlet />
+		</CurrentJobProvider>
 	);
 }

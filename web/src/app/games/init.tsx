@@ -84,8 +84,6 @@ export default function Games() {
 
 	return (
 		<SearchProvider
-			title="Active games"
-			description="Click on a game to manage"
 			queryKey={["games"]}
 			placeholder="Search by name or id..."
 		>

@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQueryClient, type QueryKey } from "@tanstack/react-query";
-import { CircleXIcon, RefreshCwIcon, ServerIcon } from "lucide-react";
+import { CircleXIcon, RefreshCwIcon } from "lucide-react";
 import { createContext, useContext, useState } from "react";
 import { toast } from "sonner";
-import { Header } from "./init";
 
 interface Refresh {
 	queryKey: QueryKey;
@@ -45,24 +44,6 @@ export function NoResult({ children }: { children: string }) {
 	);
 }
 
-function SearchInfo({
-	title,
-	description,
-	children,
-}: {
-	title: string;
-	description: string;
-	children: React.ReactNode;
-}) {
-	return (
-		<>
-			<Header icon={<ServerIcon />}>{title}</Header>
-			<p className="text-sm">{description}</p>
-			<div className="flex flex-col gap-5 mt-3">{children}</div>
-		</>
-	);
-}
-
 export const useSearch = () => {
 	const context = useContext(Context);
 	if (context === undefined)
@@ -73,31 +54,25 @@ export const useSearch = () => {
 export default function SearchProvider({
 	queryKey,
 	placeholder,
-	title,
-	description,
 	children,
 }: Refresh & {
 	placeholder: string;
-	title: string;
-	description: string;
 	children: React.ReactNode;
 }) {
 	const [searchTerm, setSearchTerm] = useState<string>("");
 
 	return (
-		<SearchInfo title={title} description={description}>
-			<Context.Provider value={{ searchTerm }}>
-				<div className="flex gap-2">
-					<RefreshButton queryKey={queryKey} />
-					<Input
-						placeholder={placeholder}
-						onChange={(i) =>
-							setSearchTerm(i.target.value.toLowerCase())
-						}
-					/>
-				</div>
-				{children}
-			</Context.Provider>
-		</SearchInfo>
+		<Context.Provider value={{ searchTerm }}>
+			<div className="flex gap-2">
+				<RefreshButton queryKey={queryKey} />
+				<Input
+					placeholder={placeholder}
+					onChange={(i) =>
+						setSearchTerm(i.target.value.toLowerCase())
+					}
+				/>
+			</div>
+			{children}
+		</Context.Provider>
 	);
 }

@@ -7,7 +7,7 @@ import Sidebar from "./sidebar/init";
 
 function Header() {
 	return (
-		<header className="flex flex-col justify-center mt-2 mb-2">
+		<header className="flex flex-col justify-center mt-1 mb-1">
 			<div className="flex gap-3 items-center ml-3">
 				<SidebarTrigger />
 				<Separator orientation="vertical" className="h-4 my-auto" />
