@@ -14,8 +14,8 @@ import {
 } from "../providers/jobs";
 import { useCurrentGame } from "../providers/current";
 import GameInfoCard from "./info";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ServerIcon, UsersIcon } from "lucide-react";
+import Widget from "../dashboard/widget";
 
 function job_has_player(job: JobsSerialized, searchTerm: string): boolean {
 	return (
@@ -53,26 +53,6 @@ function ServersList({
 	return filtered.map((job) => (
 		<ServerButton key={job.Id} job={job} to={`/${placeid}/${job.Id}`} />
 	));
-}
-
-function Widget({
-	title,
-	icon,
-	children,
-}: {
-	title: string;
-	icon: React.ReactNode;
-	children: React.ReactNode;
-}) {
-	return (
-		<Card className="w-50">
-			<CardHeader className="flex items-center justify-between [&>svg]:opacity-50">
-				<p>{title}</p>
-				{icon}
-			</CardHeader>
-			<CardContent>{children}</CardContent>
-		</Card>
-	);
 }
 
 function TotalPlayers({ jobs }: { jobs: JobsSerialized[] }) {
