@@ -84,9 +84,10 @@ export default function Games() {
 	useTitle("Games");
 
 	return (
-		<Card className="flex flex-col w-full gap-5 p-5">
+		<Card className="flex flex-col w-full gap-3 p-5 justify-center">
 			<SearchProvider
 				title="Games"
+				description="Click on a game to manage"
 				icon={<ServerIcon />}
 				queryKey={["games"]}
 				placeholder="Search by name or id..."

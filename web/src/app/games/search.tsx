@@ -56,11 +56,13 @@ export default function SearchProvider({
 	queryKey,
 	placeholder,
 	title,
+	description,
 	icon,
 	children,
 }: Refresh & {
 	placeholder: string;
 	title: string;
+	description: string;
 	icon: React.ReactNode;
 	children: React.ReactNode;
 }) {
@@ -69,11 +71,11 @@ export default function SearchProvider({
 	return (
 		<Context.Provider value={{ searchTerm }}>
 			<div className="flex items-center justify-between">
-				<div className="flex gap-2 items-center">
+				<div className="flex gap-3 items-center">
 					<div className="bg-secondary p-3 rounded-full [&>svg]:size-4">
 						{icon}
 					</div>
-					<strong>{title}</strong>
+					<strong className="text-lg">{title}</strong>
 				</div>
 				<div className="flex w-[50%] gap-2">
 					<Input
@@ -85,6 +87,7 @@ export default function SearchProvider({
 					<RefreshButton queryKey={queryKey} />
 				</div>
 			</div>
+			<p className="opacity-50">{description}</p>
 			{children}
 		</Context.Provider>
 	);

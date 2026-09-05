@@ -64,7 +64,7 @@ function TotalPlayers({ jobs }: { jobs: JobsSerialized[] }) {
 	);
 	return (
 		<Widget title="Active Players" icon={<UsersIcon />}>
-			{players.size.toLocaleString()}
+			<strong className="text-xl">{players.size.toLocaleString()}</strong>
 		</Widget>
 	);
 }
@@ -74,8 +74,17 @@ function TotalServers({ jobs }: { jobs: JobsSerialized[] }) {
 
 	return (
 		<Widget title="Active Servers" icon={<ServerIcon />}>
-			{servers.toLocaleString()}
+			<strong className="text-xl">{servers.toLocaleString()}</strong>
 		</Widget>
+	);
+}
+
+function Widgets({ jobs }: { jobs: JobsSerialized[] }) {
+	return (
+		<div className="flex flex-col gap-4 size-fit">
+			<TotalServers jobs={jobs} />
+			<TotalPlayers jobs={jobs} />
+		</div>
 	);
 }
 
@@ -98,9 +107,10 @@ export default function Servers() {
 		<>
 			<GameInfoCard game={game.current} />
 			<div className="flex gap-5 mt-5">
-				<Card className="flex flex-col w-full gap-5 p-5">
+				<Card className="flex flex-col w-full gap-3 p-5 justify-center">
 					<SearchProvider
 						title="Servers"
+						description="Click on a server to manage"
 						icon={<ServerIcon />}
 						queryKey={[`${placeid}/jobs`]}
 						placeholder="Search by server name, player id, or player name..."
@@ -110,10 +120,7 @@ export default function Servers() {
 						</div>
 					</SearchProvider>
 				</Card>
-				<div className="flex flex-col gap-4 size-fit">
-					<TotalServers jobs={jobs.data} />
-					<TotalPlayers jobs={jobs.data} />
-				</div>
+				<Widgets jobs={jobs.data} />
 			</div>
 		</>
 	);
