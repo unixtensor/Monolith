@@ -8,7 +8,7 @@ import SearchProvider, {
 	NoResult,
 	useSearch,
 	type SearchContext,
-} from "./search";
+} from "../providers/search";
 import { useTitle } from "../../hooks/useTitle";
 import { Card } from "@/components/ui/card";
 

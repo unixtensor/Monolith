@@ -9,7 +9,7 @@ export interface JobsSerialized {
 }
 export interface Job {
 	Players: { [userid: string]: string };
-	UpTime: number;
+	UpTime: string;
 }
 export interface Jobs {
 	[jobid: string]: Job;

@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import context from "@/lib/context";
 import { useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { CircleXIcon, RefreshCwIcon } from "lucide-react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useState } from "react";
 import { toast } from "sonner";
 
 interface Refresh {
@@ -11,7 +12,9 @@ interface Refresh {
 export interface SearchContext {
 	searchTerm: string;
 }
-const Context = createContext<SearchContext>({ searchTerm: "" });
+const SearchContext = createContext<SearchContext>({
+	searchTerm: "",
+});
 
 function RefreshButton({ queryKey }: Refresh) {
 	const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -46,10 +49,10 @@ export function NoResult({ children }: { children: string }) {
 }
 
 export const useSearch = () => {
-	const context = useContext(Context);
-	if (context === undefined)
-		throw new Error("useSearch must be used within a SearchProvider");
-	return context;
+	return context(
+		SearchContext,
+		"useSearch must be used within a SearchProvider",
+	);
 };
 
 export default function SearchProvider({
@@ -58,18 +61,32 @@ export default function SearchProvider({
 	title,
 	description,
 	icon,
+	filters,
 	children,
 }: Refresh & {
 	placeholder: string;
 	title: string;
 	description: string;
 	icon: React.ReactNode;
+	filters?: React.ReactNode;
 	children: React.ReactNode;
 }) {
 	const [searchTerm, setSearchTerm] = useState<string>("");
 
-	return (
-		<Context.Provider value={{ searchTerm }}>
+	const IconTitle = () => {
+		const InputRefresh = (
+			<div className="flex w-[50%] gap-2">
+				<Input
+					placeholder={placeholder}
+					onChange={(i) =>
+						setSearchTerm(i.target.value.toLowerCase())
+					}
+				/>
+				<RefreshButton queryKey={queryKey} />
+			</div>
+		);
+
+		return (
 			<div className="flex items-center justify-between">
 				<div className="flex gap-3 items-center">
 					<div className="bg-secondary p-3 rounded-full [&>svg]:size-4">
@@ -77,18 +94,19 @@ export default function SearchProvider({
 					</div>
 					<strong className="text-lg">{title}</strong>
 				</div>
-				<div className="flex w-[50%] gap-2">
-					<Input
-						placeholder={placeholder}
-						onChange={(i) =>
-							setSearchTerm(i.target.value.toLowerCase())
-						}
-					/>
-					<RefreshButton queryKey={queryKey} />
-				</div>
+				{InputRefresh}
 			</div>
-			<p className="opacity-50">{description}</p>
+		);
+	};
+
+	return (
+		<SearchContext.Provider value={{ searchTerm }}>
+			<IconTitle />
+			<div className="flex justify-between items-center">
+				<p className="opacity-50">{description}</p>
+				{filters}
+			</div>
 			{children}
-		</Context.Provider>
+		</SearchContext.Provider>
 	);
 }

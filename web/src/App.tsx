@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from "react-router";
 import Auth from "./app/init";
 import Login from "./app/login/init";
 import Games from "./app/games/init";
-import Servers from "./app/games/servers";
+import Servers from "./app/servers/init";
 import Server from "./app/server/init";
 import ServerDashboard from "./app/server/dashboard/init";
 import Game from "./app/games/game";
