@@ -1,15 +1,13 @@
 import { Separator } from "@/components/ui/separator";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Suspense } from "react";
 import { Outlet } from "react-router";
-import GamesProvider from "./providers/games";
+import GamesProvider from "../providers/games";
 import Navigator from "./navigator";
 import Sidebar from "./sidebar/init";
-import Skeleton from "./skeleton";
 
 function Header() {
 	return (
-		<header className="flex flex-col justify-center mt-2 mb-2">
+		<header className="flex flex-col justify-center mt-1 mb-1">
 			<div className="flex gap-3 items-center ml-3">
 				<SidebarTrigger />
 				<Separator orientation="vertical" className="h-4 my-auto" />
@@ -22,20 +20,16 @@ function Header() {
 
 export default function Dashboard() {
 	return (
-		<Suspense fallback={<Skeleton />}>
-			<main>
-				<GamesProvider>
-					<SidebarProvider>
-						<Sidebar />
-						<main className="w-full overflow-x-hidden">
-							<Header />
-							<main className="mx-4">
-								<Outlet />
-							</main>
-						</main>
-					</SidebarProvider>
-				</GamesProvider>
-			</main>
-		</Suspense>
+		<GamesProvider>
+			<SidebarProvider>
+				<Sidebar />
+				<main className="w-full overflow-x-hidden">
+					<Header />
+					<main className="mx-4">
+						<Outlet />
+					</main>
+				</main>
+			</SidebarProvider>
+		</GamesProvider>
 	);
 }

@@ -9,7 +9,7 @@ import { useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { LoggedIn, NeedLogin, useAuth } from "../auth/init";
-import { useTitle } from "../hooks/useTitle";
+import { useTitle } from "../../hooks/useTitle";
 
 interface loginData {
 	LoginProgress?: boolean;

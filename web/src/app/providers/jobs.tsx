@@ -1,6 +1,7 @@
 import api from "@/lib/axios";
+import context from "@/lib/context";
 import { useQuery } from "@tanstack/react-query";
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 
 export interface JobsSerialized {
 	Id: string;
@@ -8,7 +9,7 @@ export interface JobsSerialized {
 }
 export interface Job {
 	Players: { [userid: string]: string };
-	UpTime: number;
+	UpTime: string;
 }
 export interface Jobs {
 	[jobid: string]: Job;
@@ -26,10 +27,7 @@ const JobsContext = createContext<JobsContext>({
 });
 
 export const useJobs = () => {
-	const context = useContext(JobsContext);
-	if (context === undefined)
-		throw new Error("useJobs must be used within a JobsProvider");
-	return context;
+	return context(JobsContext, "useJobs must be used within a JobsProvider");
 };
 
 export default function JobsProvider({

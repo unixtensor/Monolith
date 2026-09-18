@@ -2,10 +2,13 @@ import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router";
 import Auth from "./app/init";
 import Login from "./app/login/init";
+import Games from "./app/games/init";
+import Servers from "./app/servers/init";
+import Server from "./app/server/init";
+import ServerDashboard from "./app/server/dashboard/init";
+import Game from "./app/games/game";
 
 const Dashboard = lazy(() => import("./app/dashboard/init"));
-const Games = lazy(() => import("./app/games/init"));
-const Servers = lazy(() => import("./app/games/servers"));
 
 function App() {
 	return (
@@ -15,8 +18,17 @@ function App() {
 			<Route element={<Auth />}>
 				<Route element={<Dashboard />}>
 					<Route path="/games" index element={<Games />} />
-					<Route path="/:placeId/" element={<Servers />} />
-					<Route path="/:placeId/:jobId" />
+
+					<Route element={<Game />}>
+						<Route path="/:placeId/" element={<Servers />} />
+						<Route element={<Server />}>
+							<Route
+								path="/:placeId/:jobId"
+								element={<ServerDashboard />}
+							/>
+							<Route path="/:placeId/:jobId/:userName" />
+						</Route>
+					</Route>
 				</Route>
 			</Route>
 		</Routes>

@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import context from "@/lib/context";
 import { useQueryClient, type QueryKey } from "@tanstack/react-query";
-import { CircleXIcon, RefreshCwIcon, ServerIcon } from "lucide-react";
-import { createContext, useContext, useState } from "react";
+import { CircleXIcon, RefreshCwIcon } from "lucide-react";
+import { createContext, useState } from "react";
 import { toast } from "sonner";
-import { Header } from "./init";
 
 interface Refresh {
 	queryKey: QueryKey;
@@ -12,7 +12,9 @@ interface Refresh {
 export interface SearchContext {
 	searchTerm: string;
 }
-const Context = createContext<SearchContext>({ searchTerm: "" });
+const SearchContext = createContext<SearchContext>({
+	searchTerm: "",
+});
 
 function RefreshButton({ queryKey }: Refresh) {
 	const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -28,6 +30,7 @@ function RefreshButton({ queryKey }: Refresh) {
 			})
 			.catch(() => location.reload());
 	};
+
 	return (
 		<Button onClick={handleRefresh} disabled={refreshing}>
 			<RefreshCwIcon className={refreshing ? "animate-spin" : ""} />
@@ -38,36 +41,18 @@ function RefreshButton({ queryKey }: Refresh) {
 
 export function NoResult({ children }: { children: string }) {
 	return (
-		<div className="flex flex-col gap-5 justify-center items-center h-100">
+		<div className="flex flex-col gap-5 justify-center items-center">
 			<CircleXIcon className="size-10" />
 			<h1>{children}</h1>
 		</div>
 	);
 }
 
-function SearchInfo({
-	title,
-	description,
-	children,
-}: {
-	title: string;
-	description: string;
-	children: React.ReactNode;
-}) {
-	return (
-		<>
-			<Header icon={<ServerIcon />}>{title}</Header>
-			<p className="text-sm">{description}</p>
-			<div className="flex flex-col gap-5 mt-3">{children}</div>
-		</>
-	);
-}
-
 export const useSearch = () => {
-	const context = useContext(Context);
-	if (context === undefined)
-		throw new Error("useSearch must be used within a SearchProvider");
-	return context;
+	return context(
+		SearchContext,
+		"useSearch must be used within a SearchProvider",
+	);
 };
 
 export default function SearchProvider({
@@ -75,29 +60,53 @@ export default function SearchProvider({
 	placeholder,
 	title,
 	description,
+	icon,
+	filters,
 	children,
 }: Refresh & {
 	placeholder: string;
 	title: string;
 	description: string;
+	icon: React.ReactNode;
+	filters?: React.ReactNode;
 	children: React.ReactNode;
 }) {
 	const [searchTerm, setSearchTerm] = useState<string>("");
 
-	return (
-		<SearchInfo title={title} description={description}>
-			<Context.Provider value={{ searchTerm }}>
-				<div className="flex gap-2">
-					<RefreshButton queryKey={queryKey} />
-					<Input
-						placeholder={placeholder}
-						onChange={(i) =>
-							setSearchTerm(i.target.value.toLowerCase())
-						}
-					/>
+	const IconTitle = () => {
+		const InputRefresh = (
+			<div className="flex w-[50%] gap-2">
+				<Input
+					placeholder={placeholder}
+					onChange={(i) =>
+						setSearchTerm(i.target.value.toLowerCase())
+					}
+				/>
+				<RefreshButton queryKey={queryKey} />
+			</div>
+		);
+
+		return (
+			<div className="flex items-center justify-between">
+				<div className="flex gap-3 items-center">
+					<div className="bg-secondary p-3 rounded-full [&>svg]:size-4">
+						{icon}
+					</div>
+					<strong className="text-lg">{title}</strong>
 				</div>
-				{children}
-			</Context.Provider>
-		</SearchInfo>
+				{InputRefresh}
+			</div>
+		);
+	};
+
+	return (
+		<SearchContext.Provider value={{ searchTerm }}>
+			<IconTitle />
+			<div className="flex justify-between items-center">
+				<p className="opacity-50">{description}</p>
+				{filters}
+			</div>
+			{children}
+		</SearchContext.Provider>
 	);
 }
