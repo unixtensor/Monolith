@@ -5,13 +5,14 @@ import { Navigate } from "react-router";
 import ServerHeader from "@/components/servers/ServerHeader";
 import { toast } from "sonner";
 import PlayersCard from "@/components/servers/PlayersCard";
+import ServerSkeleton from "@/components/layout/ServerSkeleton";
 
 export default function ServerPage() {
 	const game = useCurrentGame();
 	const job = useCurrentJob();
 
 	if (game.isLoading || job.isLoading) {
-		return <span>omg loading</span>;
+		return <ServerSkeleton />;
 	}
 	if (game.error || job.error) {
 		return <Navigate to="/games" replace />;
