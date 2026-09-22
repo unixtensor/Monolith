@@ -4,6 +4,7 @@ import { Outlet } from "react-router";
 import GamesProvider from "@/providers/GamesProvider";
 import AppSidebar from "./AppSidebar";
 import Navigator from "./Navigator";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 function Header() {
 	return (
@@ -22,13 +23,15 @@ export default function DashboardLayout() {
 	return (
 		<GamesProvider>
 			<SidebarProvider>
-				<AppSidebar />
-				<main className="w-full h-svh overflow-x-hidden overflow-y-auto">
-					<Header />
-					<main className="mx-4 pb-4">
-						<Outlet />
+				<TooltipProvider>
+					<AppSidebar />
+					<main className="w-full h-svh overflow-x-hidden overflow-y-auto">
+						<Header />
+						<main className="mx-4 pb-4">
+							<Outlet />
+						</main>
 					</main>
-				</main>
+				</TooltipProvider>
 			</SidebarProvider>
 		</GamesProvider>
 	);

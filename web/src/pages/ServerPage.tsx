@@ -1,11 +1,10 @@
 import { useCurrentGame, useCurrentJob } from "@/providers/CurrentProvider";
-import type { JobsSerialized } from "@/providers/JobsProvider";
-import type { Game } from "@/providers/GamesProvider";
 import { Navigate } from "react-router";
-import ServerHeader from "@/components/servers/ServerHeader";
+import ServerHeader from "@/components/servers/ServersHeader";
 import { toast } from "sonner";
 import PlayersCard from "@/components/servers/PlayersCard";
 import ServerSkeleton from "@/components/layout/ServerSkeleton";
+import ServerWidgets from "@/components/server/ServerWidgets";
 
 export default function ServerPage() {
 	const game = useCurrentGame();
@@ -28,15 +27,15 @@ export default function ServerPage() {
 
 	return (
 		<div className="flex flex-col gap-5">
-			<ServerHeader
-				job={job.current as JobsSerialized}
-				game={game.current as Game}
-			/>
-			<PlayersCard
-				key={job.current.Id}
-				game={game.current as Game}
-				job={job.current as JobsSerialized}
-			/>
+			<ServerHeader job={job.current} game={game.current} />
+			<div className="flex gap-5">
+				<PlayersCard
+					key={job.current.Id}
+					game={game.current}
+					job={job.current}
+				/>
+				<ServerWidgets game={game.current} job={job.current} />
+			</div>
 		</div>
 	);
 }

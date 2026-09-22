@@ -29,6 +29,7 @@ function App() {
 								element={<ServerPage />}
 							/>
 							<Route path="/:placeId/:jobId/:userName" />
+							<Route path="/:placeId/:jobId/sandbox" />
 						</Route>
 					</Route>
 				</Route>

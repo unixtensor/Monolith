@@ -1,5 +1,5 @@
 import type { Game } from "@/providers/GamesProvider";
-import type { JobsSerialized } from "@/providers/JobsProvider";
+import type { Job } from "@/providers/JobsProvider";
 import {
 	Card,
 	CardHeader,
@@ -21,8 +21,8 @@ import { Link } from "react-router";
 import { format, parseISO } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 
-function ServerIcon({ job }: { job?: JobsSerialized }) {
-	const is_studio = job && job.Id.startsWith("studio");
+function ServerIcon({ job }: { job?: Job }) {
+	const is_studio = job && job.isStudio;
 
 	return (
 		<div
@@ -131,7 +131,7 @@ export default function GameInfoCard({
 	game,
 	children,
 }: {
-	job?: JobsSerialized;
+	job?: Job;
 	game: Game;
 	children?: React.ReactNode;
 }) {

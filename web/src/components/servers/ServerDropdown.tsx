@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowRightIcon, InfoIcon, UserIcon, UsersIcon } from "lucide-react";
 import ButtonDropdown from "@/components/ButtonDropdown";
-import type { JobsSerialized } from "@/providers/JobsProvider";
+import type { Job } from "@/providers/JobsProvider";
 import {
 	Dialog,
 	DialogContent,
@@ -46,7 +46,7 @@ function PlayerButton({
 	);
 }
 
-function PlayersDialog({ job }: { job: JobsSerialized }) {
+function PlayersDialog({ job }: { job: Job }) {
 	const { placeId } = useParams();
 	const players: Player[] = Object.entries(job.Job.Players).map(
 		([id, name]) => ({ name, id }),
@@ -73,7 +73,7 @@ function PlayersDialog({ job }: { job: JobsSerialized }) {
 	);
 }
 
-export default function ServerDropdown({ job }: { job: JobsSerialized }) {
+export default function ServerDropdown({ job }: { job: Job }) {
 	return (
 		<ButtonDropdown>
 			<DropdownMenuGroup>

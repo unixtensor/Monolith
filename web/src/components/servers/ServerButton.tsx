@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link, type To } from "react-router";
-import type { JobsSerialized } from "@/providers/JobsProvider";
+import type { Job } from "@/providers/JobsProvider";
 import { ActivityIcon, HammerIcon, UsersIcon } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import ServerDropdown from "./ServerDropdown";
@@ -20,7 +20,7 @@ function Data({
 	);
 }
 
-function Metadata({ job }: { job: JobsSerialized }) {
+function Metadata({ job }: { job: Job }) {
 	const job_uptime = new Date(job.Job.UpTime);
 
 	return (
@@ -42,11 +42,10 @@ function Metadata({ job }: { job: JobsSerialized }) {
 	);
 }
 
-function Name({ job }: { job: JobsSerialized }) {
-	const is_studio = job.Id.startsWith("studio");
+function Name({ job }: { job: Job }) {
 	const id = <h1 className="text-lg">{job.Id}</h1>;
 
-	if (is_studio)
+	if (job.isStudio)
 		return (
 			<div className="flex items-center gap-2">
 				<div className="bg-studio-background p-1.5 size-fit rounded-full">
@@ -58,7 +57,7 @@ function Name({ job }: { job: JobsSerialized }) {
 	return id;
 }
 
-export default function ServerButton({ to, job }: { to: To; job: JobsSerialized }) {
+export default function ServerButton({ to, job }: { to: To; job: Job }) {
 	return (
 		<div className="flex w-full">
 			<Link to={to} className="w-full">

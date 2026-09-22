@@ -2,7 +2,7 @@ import GameInfoCard from "@/components/games/GameInfoCard";
 import { Loading } from "@/components/Loading";
 import NoResult from "@/components/NoResult";
 import ServerButton from "@/components/servers/ServerButton";
-import ServerWidgets from "@/components/servers/ServerWidgets";
+import ServersWidgets from "@/components/servers/ServersWidgets";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -12,11 +12,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCurrentGame } from "@/providers/CurrentProvider";
-import {
-	useJobs,
-	type JobsContext,
-	type JobsSerialized,
-} from "@/providers/JobsProvider";
+import { useJobs, type JobsContext, type Job } from "@/providers/JobsProvider";
 import SearchProvider, {
 	useSearch,
 	type SearchContext,
@@ -37,7 +33,7 @@ const defaultFilters: Filters = {
 	sortNewestFirst: true,
 };
 
-function job_has_player(job: JobsSerialized, searchTerm: string): boolean {
+function job_has_player(job: Job, searchTerm: string): boolean {
 	return (
 		Object.entries(job.Job.Players).filter(
 			([id, name]) =>
@@ -49,7 +45,7 @@ function job_has_player(job: JobsSerialized, searchTerm: string): boolean {
 function useJobsSearch(
 	jobs: JobsContext,
 	filters: Filters,
-): [JobsSerialized[], SearchContext] {
+): [Job[], SearchContext] {
 	const search = useSearch();
 
 	const filtered = jobs.data
@@ -58,7 +54,7 @@ function useJobsSearch(
 				job.Id.toLowerCase().includes(search.searchTerm) ||
 				job_has_player(job, search.searchTerm),
 		)
-		.filter((job) => !filters.studioOnly || job.Id.startsWith("studio"))
+		.filter((job) => !filters.studioOnly || job.isStudio)
 		.sort((a, b) => {
 			const delta =
 				new Date(b.Job.UpTime).getTime() -
@@ -181,7 +177,7 @@ export default function ServersPage() {
 						</div>
 					</SearchProvider>
 				</Card>
-				<ServerWidgets jobs={jobs.data} />
+				<ServersWidgets jobs={jobs.data} />
 			</div>
 		</>
 	);
