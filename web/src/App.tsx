@@ -1,30 +1,32 @@
+import GameLayout from "@/components/layout/GameLayout";
+import ServerLayout from "@/components/layout/ServerLayout";
+import RequireAuth from "@/components/RequireAuth";
+import GamesPage from "@/pages/GamesPage";
+import LoginPage from "@/pages/LoginPage";
+import ServerPage from "@/pages/ServerPage";
+import ServersPage from "@/pages/ServersPage";
 import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router";
-import Auth from "./app/init";
-import Login from "./app/login/init";
-import Games from "./app/games/init";
-import Servers from "./app/servers/init";
-import Server from "./app/server/init";
-import ServerDashboard from "./app/server/dashboard/init";
-import Game from "./app/games/game";
 
-const Dashboard = lazy(() => import("./app/dashboard/init"));
+const DashboardLayout = lazy(
+	() => import("@/components/layout/DashboardLayout"),
+);
 
 function App() {
 	return (
 		<Routes>
-			<Route path="/login" element={<Login />} />
+			<Route path="/login" element={<LoginPage />} />
 			<Route path="*" element={<Navigate to="/games" replace />} />
-			<Route element={<Auth />}>
-				<Route element={<Dashboard />}>
-					<Route path="/games" index element={<Games />} />
+			<Route element={<RequireAuth />}>
+				<Route element={<DashboardLayout />}>
+					<Route path="/games" index element={<GamesPage />} />
 
-					<Route element={<Game />}>
-						<Route path="/:placeId/" element={<Servers />} />
-						<Route element={<Server />}>
+					<Route element={<GameLayout />}>
+						<Route path="/:placeId/" element={<ServersPage />} />
+						<Route element={<ServerLayout />}>
 							<Route
 								path="/:placeId/:jobId"
-								element={<ServerDashboard />}
+								element={<ServerPage />}
 							/>
 							<Route path="/:placeId/:jobId/:userName" />
 						</Route>

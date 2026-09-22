@@ -3,9 +3,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { Toaster } from "sonner";
-import App from "./App.tsx";
-import AuthProvider from "./app/auth/init.tsx";
-import { ThemeProvider } from "./components/theme-provider.tsx";
+import App from "@/App";
+import AuthProvider from "@/providers/AuthProvider";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import "./index.css";
 
 const queryClient = new QueryClient();
