@@ -45,7 +45,7 @@ function UptimeWidget({ job }: { job: Job }) {
 					{format_uptime(uptime)}
 				</strong>
 				<CardDescription>
-					Since {format(parseISO(job.Job.UpTime), "MMM d, HH:mm")}
+					Since {format(parseISO(job.Job.UpTime), "MMM d, HH:mm:ss")}
 				</CardDescription>
 			</CardContent>
 		</Widget>
