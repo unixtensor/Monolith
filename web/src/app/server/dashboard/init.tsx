@@ -4,6 +4,7 @@ import type { Game } from "../../providers/games";
 import { Navigate } from "react-router";
 import ServerDashboardHeader from "./header";
 import { toast } from "sonner";
+import Players from "./players";
 
 export default function Dashboard() {
 	const game = useCurrentGame();
@@ -23,10 +24,17 @@ export default function Dashboard() {
 		toast.error("This server has closed or doesnt exist");
 		return <Navigate to={`/${game.current.Properties.PlaceId}`} replace />;
 	}
+
 	return (
-		<ServerDashboardHeader
-			job={job.current as JobsSerialized}
-			game={game.current as Game}
-		/>
+		<div className="flex flex-col gap-5">
+			<ServerDashboardHeader
+				job={job.current as JobsSerialized}
+				game={game.current as Game}
+			/>
+			<Players
+				game={game.current as Game}
+				job={job.current as JobsSerialized}
+			/>
+		</div>
 	);
 }

@@ -23,9 +23,9 @@ export default function Dashboard() {
 		<GamesProvider>
 			<SidebarProvider>
 				<Sidebar />
-				<main className="w-full overflow-x-hidden">
+				<main className="w-full h-svh overflow-x-hidden overflow-y-auto">
 					<Header />
-					<main className="mx-4">
+					<main className="mx-4 pb-4">
 						<Outlet />
 					</main>
 				</main>
