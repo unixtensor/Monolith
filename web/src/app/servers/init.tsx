@@ -15,7 +15,7 @@ import {
 } from "../providers/jobs";
 import { useCurrentGame } from "../providers/current";
 import GameInfoCard from "../games/info";
-import { ArrowUpDownIcon, FilterIcon, ServerIcon } from "lucide-react";
+import { ArrowDownAZIcon, FilterIcon, ServerIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
 	DropdownMenu,
@@ -132,7 +132,7 @@ function SearchFilters({
 					}))
 				}
 			>
-				<ArrowUpDownIcon />
+				<ArrowDownAZIcon />
 			</Button>
 		</div>
 	);
