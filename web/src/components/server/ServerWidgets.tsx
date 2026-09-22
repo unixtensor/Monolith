@@ -54,7 +54,7 @@ function UptimeWidget({ job }: { job: Job }) {
 
 function SandboxWidget({ game, job }: { game: Game; job: Job }) {
 	return (
-		<Widget title="Sandbox" icon={<WrenchIcon />} className="w-fit h-fit">
+		<Widget title="Sandbox" icon={<WrenchIcon />} className="size-fit">
 			<CardDescription className="pl-4 pr-4">
 				Modify the server in real-time from the dashboard
 			</CardDescription>
