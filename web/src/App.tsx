@@ -3,6 +3,7 @@ import ServerLayout from "@/components/layout/ServerLayout";
 import RequireAuth from "@/components/RequireAuth";
 import GamesPage from "@/pages/GamesPage";
 import LoginPage from "@/pages/LoginPage";
+import SandboxPage from "@/pages/SandboxPage";
 import ServerPage from "@/pages/ServerPage";
 import ServersPage from "@/pages/ServersPage";
 import { lazy } from "react";
@@ -29,7 +30,10 @@ function App() {
 								element={<ServerPage />}
 							/>
 							<Route path="/:placeId/:jobId/:userName" />
-							<Route path="/:placeId/:jobId/sandbox" />
+							<Route
+								path="/:placeId/:jobId/sandbox"
+								element={<SandboxPage />}
+							/>
 						</Route>
 					</Route>
 				</Route>

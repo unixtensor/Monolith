@@ -25,9 +25,9 @@ export default function DashboardLayout() {
 			<SidebarProvider>
 				<TooltipProvider>
 					<AppSidebar />
-					<main className="w-full h-svh overflow-x-hidden overflow-y-auto">
+					<main className="flex flex-col w-full h-svh overflow-hidden">
 						<Header />
-						<main className="mx-4 pb-4">
+						<main className="flex-1 min-h-0 mx-4 pb-4 overflow-x-hidden overflow-y-auto">
 							<Outlet />
 						</main>
 					</main>
