@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
 	Collapsible,
 	CollapsibleContent,
@@ -9,93 +9,188 @@ import {
 	SidebarContent,
 	SidebarFooter,
 	SidebarGroup,
-	SidebarGroupLabel,
+	SidebarGroupContent,
 	SidebarHeader,
 	SidebarMenu,
+	SidebarMenuAction,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	SidebarMenuSkeleton,
 	SidebarMenuSub,
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
+	SidebarRail,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { useGames, type Game } from "@/providers/GamesProvider";
 import {
 	ChevronRight,
 	GitForkIcon,
-	LoaderCircleIcon,
 	ServerIcon,
+	TriangleAlertIcon,
+	WorkflowIcon,
 } from "lucide-react";
-import { Link } from "react-router";
-import { useGames, type Game } from "@/providers/GamesProvider";
+import { Link, useLocation } from "react-router";
 import LogoutButton from "./LogoutButton";
 
-function GameLink({ game }: { game: Game }) {
-	if (game.Jobs.length === 0)
-		return <span className="opacity-30">{game.Properties.Name}</span>;
+function useSection(): string {
+	return useLocation().pathname.split("/").filter(Boolean)[0] ?? "";
+}
 
+function Brand() {
 	return (
-		<Link to={`/${game.Properties.PlaceId}`}>
-			<span>{game.Properties.Name}</span>
-		</Link>
+		<div className="flex items-center gap-2 px-2 py-1">
+			<h1 className="text-base leading-none font-black tracking-tight">
+				Monolith
+			</h1>
+			<Badge
+				variant="secondary"
+				className="px-1.5 text-[0.625rem] tracking-wide uppercase"
+			>
+				alpha
+			</Badge>
+		</div>
 	);
 }
 
-function Games() {
-	const games = useGames();
+function ListNotice({
+	children,
+	className,
+}: {
+	children: React.ReactNode;
+	className?: string;
+}) {
+	return (
+		<SidebarMenuSubItem>
+			<span
+				className={cn(
+					"flex h-7 items-center gap-2 px-2 text-xs text-sidebar-foreground/60",
+					className,
+				)}
+			>
+				{children}
+			</span>
+		</SidebarMenuSubItem>
+	);
+}
+
+function GameRow({ game, active }: { game: Game; active: boolean }) {
+	const { Name, PlaceId } = game.Properties;
+	const servers = game.Jobs.length;
+	const idle = servers === 0;
+	const label = (
+		<>
+			<span className="min-w-0 flex-1 truncate">{Name}</span>
+			<span className="shrink-0 text-xs tabular-nums opacity-60">
+				{servers}
+			</span>
+		</>
+	);
 
 	return (
-		<SidebarMenuItem>
-			<Link to="/games">
-				<CollapsibleTrigger asChild disabled={games.data.length === 0}>
-					<SidebarMenuButton>
+		<SidebarMenuSubItem>
+			<SidebarMenuSubButton
+				asChild
+				isActive={active}
+				aria-disabled={idle}
+				title={idle ? `${Name} has no servers running` : undefined}
+			>
+				{idle ? (
+					<span>{label}</span>
+				) : (
+					<Link to={`/${PlaceId}`}>{label}</Link>
+				)}
+			</SidebarMenuSubButton>
+		</SidebarMenuSubItem>
+	);
+}
+
+function GamesList() {
+	const games = useGames();
+	const section = useSection();
+
+	if (games.isLoading) {
+		return [0, 1, 2].map((row) => (
+			<SidebarMenuSubItem key={row}>
+				<SidebarMenuSkeleton className="h-7" />
+			</SidebarMenuSubItem>
+		));
+	}
+	if (games.error) {
+		return (
+			<ListNotice className="text-destructive">
+				<TriangleAlertIcon className="size-3.5 shrink-0" />
+				Could not load games
+			</ListNotice>
+		);
+	}
+	if (games.data.length === 0) {
+		return <ListNotice>No games found</ListNotice>;
+	}
+	return games.data.map((game) => (
+		<GameRow
+			key={game.Properties.PlaceId}
+			game={game}
+			active={game.Properties.PlaceId === section}
+		/>
+	));
+}
+
+function GamesSection() {
+	const section = useSection();
+
+	return (
+		<Collapsible defaultOpen asChild>
+			<SidebarMenuItem>
+				<SidebarMenuButton
+					asChild
+					isActive={section === "games"}
+					tooltip="Games"
+				>
+					<Link to="/games">
 						<ServerIcon />
 						<span>Games</span>
-						{games.isLoading && (
-							<LoaderCircleIcon className="animate-spin" />
-						)}
-						<ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-					</SidebarMenuButton>
+					</Link>
+				</SidebarMenuButton>
+				<CollapsibleTrigger asChild>
+					<SidebarMenuAction className="data-[state=open]:rotate-90">
+						<ChevronRight />
+						<span className="sr-only">Toggle the game list</span>
+					</SidebarMenuAction>
 				</CollapsibleTrigger>
-			</Link>
-			<CollapsibleContent>
-				<SidebarMenuSub>
-					<SidebarMenuSubItem>
-						{games.data.map((game) => (
-							<SidebarMenuSubButton
-								asChild
-								key={game.Properties.PlaceId}
-							>
-								<GameLink game={game} />
-							</SidebarMenuSubButton>
-						))}
-					</SidebarMenuSubItem>
-				</SidebarMenuSub>
-			</CollapsibleContent>
-		</SidebarMenuItem>
+				<CollapsibleContent>
+					<SidebarMenuSub>
+						<GamesList />
+					</SidebarMenuSub>
+				</CollapsibleContent>
+			</SidebarMenuItem>
+		</Collapsible>
 	);
 }
 
-function ButtonsGroup() {
+function NavigationGroup() {
+	const section = useSection();
+
 	return (
 		<SidebarGroup>
-			<Collapsible asChild className="group/collapsible">
+			<SidebarGroupContent>
 				<SidebarMenu>
-					<Games />
+					<GamesSection />
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							asChild
+							isActive={section === "graph"}
+							tooltip="Graph"
+						>
+							<Link to="/graph">
+								<WorkflowIcon />
+								<span>Graph</span>
+							</Link>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
 				</SidebarMenu>
-			</Collapsible>
-			<Link to="/graph">
-				<Button className="justify-baseline bg-transparent text-primary pl-2">
-					<GitForkIcon /> Graph
-				</Button>
-			</Link>
-		</SidebarGroup>
-	);
-}
-
-function SettingsGroup() {
-	return (
-		<SidebarGroup>
-			<SidebarGroupLabel>Settings</SidebarGroupLabel>
+			</SidebarGroupContent>
 		</SidebarGroup>
 	);
 }
@@ -104,15 +199,28 @@ export function SidebarSkeleton() {
 	return (
 		<ShadSidebar>
 			<SidebarHeader>
-				<Skeleton className="h-5 w-40 mx-auto" />
+				<div className="flex items-center gap-2 px-2 py-1">
+					<Skeleton className="h-4 w-24" />
+					<Skeleton className="h-4 w-12 rounded-4xl" />
+				</div>
 			</SidebarHeader>
 			<SidebarContent>
-				<Skeleton className="h-5 w-55 ml-2 mt-5" />
-				<Skeleton className="h-5 w-55 ml-2 mt-3" />
+				<SidebarGroup>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{[0, 1].map((row) => (
+								<SidebarMenuItem key={row}>
+									<SidebarMenuSkeleton showIcon />
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
-				<Skeleton className="h-7 w-60" />
+				<Skeleton className="h-9 w-full" />
 			</SidebarFooter>
+			<SidebarRail />
 		</ShadSidebar>
 	);
 }
@@ -120,19 +228,16 @@ export function SidebarSkeleton() {
 export default function AppSidebar() {
 	return (
 		<ShadSidebar>
-			<SidebarHeader className="mt-3">
-				<div className="flex gap-2 items-center ml-1">
-					<h1 className="font-black">Monolith</h1>
-					<p className="opacity-40 text-sm">alpha</p>
-				</div>
+			<SidebarHeader>
+				<Brand />
 			</SidebarHeader>
 			<SidebarContent>
-				<ButtonsGroup />
-				<SettingsGroup />
+				<NavigationGroup />
 			</SidebarContent>
 			<SidebarFooter>
 				<LogoutButton />
 			</SidebarFooter>
+			<SidebarRail />
 		</ShadSidebar>
 	);
 }
