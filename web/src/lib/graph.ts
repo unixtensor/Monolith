@@ -2,8 +2,8 @@ import type { Game } from "@/providers/GamesProvider";
 import type { Edge, Node } from "@xyflow/react";
 
 const game_height = 76;
-const server_height = 52;
-const server_row = 64;
+const server_height = 56;
+const server_row = 55;
 const group_gap = 32;
 const column = 340;
 

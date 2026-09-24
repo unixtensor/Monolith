@@ -11,7 +11,7 @@ export default function ServerNode({
 			to={`/${data.placeId}/${data.jobId}`}
 			title={data.jobId}
 			handle="target"
-			className="w-72"
+			className="w-fit"
 		>
 			{data.studio ? (
 				<HammerIcon className="size-4 text-studio" />
