@@ -1,4 +1,4 @@
-// Generated with Claude Opus 5.5 with max effort on 9/23/26.
+// Generated using Claude Opus 5.5 with max effort on 9/23/26.
 // Manually reviewed and modified by unixtensor.
 /**
  * Luau language support for the Monaco editor.
