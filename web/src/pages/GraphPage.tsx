@@ -14,8 +14,13 @@ import {
 	ReactFlow,
 	type NodeTypes,
 } from "@xyflow/react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import "@xyflow/react/dist/style.css";
+import { HeaderBarActions } from "@/providers/HeaderBarProvider";
+import { Button } from "@/components/ui/button";
+import { RefreshCwIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const node_types: NodeTypes = { game: GameNode, server: ServerNode };
 
@@ -78,12 +83,40 @@ function Topology() {
 	);
 }
 
+function RefreshGraph() {
+	const [refreshing, setRefreshing] = useState<boolean>(false);
+	const queryClient = useQueryClient();
+
+	const handleRefresh = () => {
+		setRefreshing(true);
+		queryClient
+			.refetchQueries({ queryKey: ["games"] })
+			.then(() => {
+				setRefreshing(false);
+				toast.success("Refresh success");
+			})
+			.catch(() => location.reload());
+	};
+
+	return (
+		<Button onClick={handleRefresh} disabled={refreshing}>
+			Refresh
+			<RefreshCwIcon className={refreshing ? "animate-spin" : ""} />
+		</Button>
+	);
+}
+
 export default function GraphPage() {
 	useTitle("Graph");
 
 	return (
-		<Card className="h-full w-full py-0 rounded-br-none">
-			<Topology />
-		</Card>
+		<>
+			<HeaderBarActions>
+				<RefreshGraph />
+			</HeaderBarActions>
+			<Card className="h-full w-full py-0 rounded-br-none">
+				<Topology />
+			</Card>
+		</>
 	);
 }
