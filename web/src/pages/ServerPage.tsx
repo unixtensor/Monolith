@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import PlayersCard from "@/components/servers/PlayersCard";
 import ServerSkeleton from "@/components/layout/ServerSkeleton";
 import ServerWidgets from "@/components/server/ServerWidgets";
+import ServerQuickLinks from "@/components/server/ServerQuickLinks";
 
 export default function ServerPage() {
 	const game = useCurrentGame();
@@ -27,6 +28,7 @@ export default function ServerPage() {
 
 	return (
 		<div className="flex flex-col gap-5">
+			<ServerQuickLinks game={game.current} job={job.current} />
 			<ServerHeader job={job.current} game={game.current} />
 			<div className="flex gap-5">
 				<PlayersCard
