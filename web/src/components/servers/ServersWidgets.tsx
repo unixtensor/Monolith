@@ -1,8 +1,8 @@
 import { UsersIcon, ServerIcon } from "lucide-react";
 import Widget from "@/components/Widget";
-import type { JobsSerialized } from "@/providers/JobsProvider";
+import type { Job } from "@/providers/JobsProvider";
 
-function TotalPlayers({ jobs }: { jobs: JobsSerialized[] }) {
+function TotalPlayers({ jobs }: { jobs: Job[] }) {
 	const players = new Set();
 
 	jobs.forEach(({ Job }) =>
@@ -15,7 +15,7 @@ function TotalPlayers({ jobs }: { jobs: JobsSerialized[] }) {
 	);
 }
 
-function TotalServers({ jobs }: { jobs: JobsSerialized[] }) {
+function TotalServers({ jobs }: { jobs: Job[] }) {
 	const servers = Object.entries(jobs).length;
 
 	return (
@@ -25,11 +25,7 @@ function TotalServers({ jobs }: { jobs: JobsSerialized[] }) {
 	);
 }
 
-export default function ServerWidgets({
-	jobs,
-}: {
-	jobs: JobsSerialized[];
-}) {
+export default function ServersWidgets({ jobs }: { jobs: Job[] }) {
 	return (
 		<div className="flex flex-col gap-4 size-fit">
 			<TotalServers jobs={jobs} />

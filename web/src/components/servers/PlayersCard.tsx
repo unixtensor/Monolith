@@ -1,6 +1,6 @@
 import NoResult from "@/components/NoResult";
 import type { Game } from "@/providers/GamesProvider";
-import type { JobsSerialized } from "@/providers/JobsProvider";
+import type { Job } from "@/providers/JobsProvider";
 import SearchProvider, { useSearch } from "@/providers/SearchProvider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ interface PlayerRow {
 
 interface PlayersProps {
 	game: Game;
-	job: JobsSerialized;
+	job: Job;
 }
 
 const columnHelper = createColumnHelper<typeof dataTableFeatures, PlayerRow>();
@@ -86,7 +86,7 @@ const columns = columnHelper.columns([
 	}),
 ]);
 
-function player_rows(game: Game, job: JobsSerialized): PlayerRow[] {
+function player_rows(game: Game, job: Job): PlayerRow[] {
 	return Object.entries(job.Job.Players)
 		.map(([userid, name]) => ({
 			userid,
@@ -268,7 +268,7 @@ export default function PlayersCard({ game, job }: PlayersProps) {
 	const selected = players.filter((p) => rowSelection[p.userid]).length;
 
 	return (
-		<Card className="p-5">
+		<Card className="p-5 w-full h-fit">
 			<SearchProvider
 				title="Players"
 				description="Click on a player to manage"

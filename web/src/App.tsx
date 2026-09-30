@@ -11,6 +11,8 @@ import { Navigate, Route, Routes } from "react-router";
 const DashboardLayout = lazy(
 	() => import("@/components/layout/DashboardLayout"),
 );
+const GraphPage = lazy(() => import("@/pages/GraphPage"));
+const SandboxPage = lazy(() => import("@/pages/SandboxPage"));
 
 function App() {
 	return (
@@ -20,6 +22,7 @@ function App() {
 			<Route element={<RequireAuth />}>
 				<Route element={<DashboardLayout />}>
 					<Route path="/games" index element={<GamesPage />} />
+					<Route path="/graph" element={<GraphPage />} />
 
 					<Route element={<GameLayout />}>
 						<Route path="/:placeId/" element={<ServersPage />} />
@@ -29,6 +32,10 @@ function App() {
 								element={<ServerPage />}
 							/>
 							<Route path="/:placeId/:jobId/:userName" />
+							<Route
+								path="/:placeId/:jobId/sandbox"
+								element={<SandboxPage />}
+							/>
 						</Route>
 					</Route>
 				</Route>

@@ -1,6 +1,6 @@
 import { createContext } from "react";
 import { useGames, type Game } from "./GamesProvider";
-import { useJobs, type JobsSerialized } from "./JobsProvider";
+import { useJobs, type Job } from "./JobsProvider";
 import context from "@/lib/context";
 
 export interface CurrentContext<T> {
@@ -13,7 +13,7 @@ const CurrentGameContext = createContext<CurrentContext<Game>>({
 	isLoading: true,
 	error: null,
 });
-const CurrentJobContext = createContext<CurrentContext<JobsSerialized>>({
+const CurrentJobContext = createContext<CurrentContext<Job>>({
 	current: undefined,
 	isLoading: true,
 	error: null,
