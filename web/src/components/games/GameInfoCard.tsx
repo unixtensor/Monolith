@@ -9,10 +9,10 @@ import {
 import {
 	HammerIcon,
 	Gamepad2Icon,
-	ArrowUpIcon,
 	TagIcon,
 	ClockIcon,
 	CalendarIcon,
+	ChevronDownIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -26,7 +26,7 @@ function ServerIcon({ job }: { job?: Job }) {
 
 	return (
 		<div
-			className={`${is_studio ? "bg-studio-background " : ""}bg-secondary w-fit p-3 rounded [&>svg]:size-5`}
+			className={`${is_studio ? "bg-studio-background" : ""} bg-secondary w-fit p-3 rounded [&>svg]:size-5`}
 		>
 			{is_studio ? (
 				<HammerIcon className="text-studio" />
@@ -93,8 +93,8 @@ function DescriptionToggle({ game }: { game: Game }) {
 			</CardContent>
 			<CardFooter>
 				<Button title="Toggle additional info" onClick={toggle}>
-					<ArrowUpIcon
-						className={hidden ? "rotate-180" : "rotate-0"}
+					<ChevronDownIcon
+						className={hidden ? "rotate-0" : "rotate-180"}
 					/>
 				</Button>
 			</CardFooter>
