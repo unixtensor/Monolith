@@ -36,12 +36,8 @@ import {
 import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
-
-interface PlayerRow {
-	userid: string;
-	name: string;
-	to: string;
-}
+import type { PlayerRow } from "@/lib/players";
+import format_players from "@/lib/players";
 
 interface PlayersProps {
 	game: Game;
@@ -85,16 +81,6 @@ const columns = columnHelper.columns([
 		cell: ({ row }) => <PlayerMenu player={row.original} />,
 	}),
 ]);
-
-function player_rows(game: Game, job: Job): PlayerRow[] {
-	return Object.entries(job.Job.Players)
-		.map(([userid, name]) => ({
-			userid,
-			name,
-			to: `/${game.Properties.PlaceId}/${job.Id}/${name}`,
-		}))
-		.sort((a, b) => a.name.localeCompare(b.name));
-}
 
 function player_matches(player: PlayerRow, searchTerm: string): boolean {
 	return (
@@ -264,7 +250,7 @@ function Toolbar({
 export default function PlayersCard({ game, job }: PlayersProps) {
 	const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-	const players = player_rows(game, job);
+	const players = format_players(game, job);
 	const selected = players.filter((p) => rowSelection[p.userid]).length;
 
 	return (
