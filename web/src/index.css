@@ -55,7 +55,7 @@ button:not(:disabled),
 	--font-mono:
 		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
 		"Liberation Mono", "Courier New", monospace;
-	--radius: 0.625rem;
+	--radius: 0.3rem;
 	--shadow-x: 0;
 	--shadow-y: 1px;
 	--shadow-blur: 3px;
@@ -83,24 +83,24 @@ button:not(:disabled),
 	--studio-background: #031f33;
 	--studio: #0c86d9;
 
-	--background: oklch(0.145 0 0);
+	--background: oklch(0.1 0 0);
 	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.205 0 0);
+	--card: oklch(0.145 0 0);
 	--card-foreground: oklch(0.985 0 0);
-	--popover: oklch(0.269 0 0);
+	--popover: oklch(0.205 0 0);
 	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.922 0 0);
-	--primary-foreground: oklch(0.205 0 0);
-	--secondary: oklch(0.269 0 0);
+	--primary: oklch(0.3 0 0);
+	--primary-foreground: oklch(0.9 0 0);
+	--secondary: oklch(0.205 0 0);
 	--secondary-foreground: oklch(0.985 0 0);
-	--muted: oklch(0.269 0 0);
+	--muted: oklch(0.205 0 0);
 	--muted-foreground: oklch(0.708 0 0);
-	--accent: oklch(0.371 0 0);
+	--accent: oklch(0.269 0 0);
 	--accent-foreground: oklch(0.985 0 0);
 	--destructive: oklch(0.704 0.191 22.216);
 	--destructive-foreground: oklch(0.985 0 0);
-	--border: oklch(0.275 0 0);
-	--input: oklch(0.325 0 0);
+	--border: oklch(0.22 0 0);
+	--input: oklch(0.269 0 0);
 	--ring: oklch(0.556 0 0);
 	--chart-1: oklch(0.81 0.1 252);
 	--chart-2: oklch(0.62 0.19 260);
@@ -111,9 +111,9 @@ button:not(:disabled),
 	--sidebar-foreground: oklch(0.985 0 0);
 	--sidebar-primary: oklch(0.488 0.243 264.376);
 	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
+	--sidebar-accent: oklch(0.205 0 0);
 	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(0.275 0 0);
+	--sidebar-border: oklch(0.22 0 0);
 	--sidebar-ring: oklch(0.439 0 0);
 	--font-sans:
 		ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -124,7 +124,7 @@ button:not(:disabled),
 	--font-mono:
 		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
 		"Liberation Mono", "Courier New", monospace;
-	--radius: 0.625rem;
+	--radius: 0.3rem;
 	--shadow-x: 0;
 	--shadow-y: 1px;
 	--shadow-blur: 3px;
