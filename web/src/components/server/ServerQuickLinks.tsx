@@ -52,6 +52,7 @@ export default function ServerQuickLinks({
 					<DropdownMenuItem>
 						<Link
 							to={`/${game.Properties.PlaceId}/${job.Id}/sandbox`}
+							className="w-full"
 						>
 							Sandbox
 						</Link>
